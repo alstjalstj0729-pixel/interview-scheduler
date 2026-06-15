@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>면접 일정 조율</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#F7F8FA;color:#111;min-height:100vh;line-height:1.5}
+
+:root{
+  --blue:#2563EB;--blue-light:#EFF6FF;--blue-mid:#BFDBFE;--blue-dark:#1D4ED8;
+  --green:#16A34A;--green-light:#F0FDF4;--green-mid:#BBF7D0;
+  --amber:#D97706;--amber-light:#FFFBEB;--amber-mid:#FDE68A;
+  --red:#DC2626;--red-light:#FEF2F2;
+  --ink:#111827;--ink2:#374151;--ink3:#6B7280;--ink4:#9CA3AF;
+  --line:#E5E7EB;--line2:#F3F4F6;
+  --surface:#FFFFFF;
+  --radius:14px;--radius-sm:8px;--radius-xs:6px;
+}
+
+/* ── HEADER ── */
+.hdr{
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  padding:0 20px;
+  height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+.hdr-logo{font-size:15px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
+.hdr-logo i{color:var(--blue);font-size:20px}
+.hdr-pill{background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px}
+.hdr-nav{display:flex;gap:4px}
+.hdr-btn{background:none;border:none;color:var(--ink3);font-size:13px;font-family:inherit;padding:6px 12px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .12s,color .12s}
+.hdr-btn:hover{background:var(--line2);color:var(--ink)}
+.hdr-btn.on{background:var(--blue-light);color:var(--blue);font-weight:600}
+.hdr-btn i{font-size:16px}
+
+/* ── PAGE WRAPPER ── */
+.page{max-width:680px;margin:0 auto;padding:24px 16px 80px}
+.page-sm{max-width:480px;margin:0 auto;padding:24px 16px 80px}
+
+/* ── SECTION HEADER ── */
+.pg-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.pg-title{font-size:19px;font-weight:700;color:var(--ink)}
+.pg-sub{font-size:13px;color:var(--ink3);margin-top:2px}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
+.card-head{padding:16px 20px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between}
+.card-label{font-size:13px;font-weight:600;color:var(--ink2);display:flex;align-items:center;gap:6px}
+.card-label i{color:var(--ink3);font-size:16px}
+.card-body{padding:20px}
+
+/* ── FORM ── */
+.fg{margin-bottom:16px}
+.fg:last-child{margin-bottom:0}
+.fl{display:block;font-size:12px;font-weight:600;color:var(--ink3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.fl .req{color:var(--red)}
+.fc{
+  width:100%;border:1.5px solid var(--line);border-radius:var(--radius-sm);
+  padding:11px 14px;font-size:15px;font-family:inherit;color:var(--ink);
+  background:#fff;outline:none;transition:border-color .15s,box-shadow .15s;
+  -webkit-appearance:none;appearance:none;
+}
+.fc:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.fc::placeholder{color:var(--ink4)}
+select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236B7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:12px 20px;border-radius:30px;font-size:14px;font-weight:600;
+  font-family:inherit;cursor:pointer;border:none;transition:all .15s;
+  white-space:nowrap;text-decoration:none;
+}
+.btn i{font-size:17px}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue-dark)}
+.btn-primary:active{transform:scale(.98)}
+.btn-success{background:var(--green);color:#fff}
+.btn-success:hover{background:#15803D}
+.btn-ghost{background:var(--line2);color:var(--ink2);border:1px solid var(--line)}
+.btn-ghost:hover{background:var(--line);color:var(--ink)}
+.btn-danger{background:var(--red-light);color:var(--red);border:1px solid #FECACA}
+.btn-sm{padding:8px 14px;font-size:13px;border-radius:20px}
+.btn-sm i{font-size:15px}
+.btn-block{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ── BACK BUTTON ── */
+.back-btn{display:inline-flex;align-items:center;gap:5px;color:var(--ink3);font-size:13px;font-weight:500;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;margin-bottom:18px}
+.back-btn:hover{color:var(--blue)}
+.back-btn i{font-size:16px}
+
+/* ── SESSION CARD ── */
+.scard{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;
+  transition:border-color .12s,box-shadow .12s;margin-bottom:10px;
+}
+.scard:hover{border-color:var(--blue-mid);box-shadow:0 2px 12px rgba(37,99,235,.08)}
+.scard-icon{width:44px;height:44px;border-radius:12px;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.scard-icon i{font-size:22px}
+.scard-body{flex:1;min-width:0}
+.scard-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scard-meta{font-size:12px;color:var(--ink3);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.scard-arrow{color:var(--ink4);flex-shrink:0}
+.scard-arrow i{font-size:18px}
+
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.2px}
+.badge i{font-size:11px}
+.badge-blue{background:var(--blue-light);color:var(--blue)}
+.badge-green{background:var(--green-light);color:var(--green)}
+.badge-amber{background:var(--amber-light);color:var(--amber)}
+.badge-purple{background:#F5F3FF;color:#7C3AED}
+.badge-pink{background:#FDF2F8;color:#BE185D}
+
+/* ── LINK BOX ── */
+.lbox{
+  background:var(--line2);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.lbox:last-child{margin-bottom:0}
+.lbox-role{font-size:11px;font-weight:700;color:var(--ink3);white-space:nowrap;min-width:52px;display:flex;align-items:center;gap:4px}
+.lbox-role i{font-size:13px}
+.lbox-url{font-size:12px;color:var(--blue);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace}
+.lbox-copy{flex-shrink:0}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;text-align:center}
+.stat-num{font-size:26px;font-weight:800;color:var(--blue);line-height:1;margin-bottom:4px}
+.stat-lbl{font-size:11px;color:var(--ink3);font-weight:500}
+
+/* ── ANALYSIS SLOTS ── */
+.aslot{
+  display:flex;align-items:center;gap:12px;padding:14px 16px;
+  border-radius:var(--radius-sm);border:1.5px solid var(--line);
+  background:var(--surface);cursor:pointer;transition:all .12s;margin-bottom:8px;
+}
+.aslot:last-child{margin-bottom:0}
+.aslot:hover{border-color:var(--blue-mid);box-shadow:0 2px 8px rgba(37,99,235,.08)}
+.aslot.is-best{border-color:var(--amber-mid);background:var(--amber-light)}
+.aslot.is-confirmed{border-color:var(--green-mid);background:var(--green-light)}
+.aslot-time{font-size:13px;font-weight:700;color:var(--ink);min-width:130px;line-height:1.3}
+.aslot-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.aslot-fill{height:100%;border-radius:3px;background:var(--ink3);transition:width .3s}
+.aslot.is-best .aslot-fill{background:var(--amber)}
+.aslot.is-confirmed .aslot-fill{background:var(--green)}
+.aslot-count{font-size:12px;font-weight:700;color:var(--ink2);white-space:nowrap}
+.aslot-names{font-size:11px;color:var(--ink4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+
+/* ── RESPONDENT LIST ── */
+.ritem{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--radius-sm);background:var(--line2);margin-bottom:6px}
+.ritem:last-child{margin-bottom:0}
+.ritem-name{font-size:13px;font-weight:600;color:var(--ink);flex:1}
+.ritem-cnt{font-size:12px;color:var(--ink3)}
+.ritem-email{font-size:11px;color:var(--ink4)}
+
+/* ── CONFIRMED BANNER ── */
+.conf-banner{
+  background:linear-gradient(135deg,#166534,#16A34A);
+  color:#fff;border-radius:var(--radius);padding:24px 20px;
+  text-align:center;margin-bottom:16px;
+}
+.conf-banner i{font-size:32px;margin-bottom:8px;display:block;opacity:.9}
+.conf-banner h3{font-size:20px;font-weight:800;margin-bottom:4px}
+.conf-banner p{font-size:13px;opacity:.85}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.on{display:block}
+
+/* ── DATE TABS ── */
+.dtabs{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:16px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.dtabs::-webkit-scrollbar{display:none}
+.dtab{
+  flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;
+  border:1.5px solid var(--line);background:var(--surface);cursor:pointer;
+  color:var(--ink3);font-family:inherit;transition:all .12s;white-space:nowrap;
+}
+.dtab:hover{border-color:var(--blue-mid);color:var(--blue)}
+.dtab.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* ── TIME SLOTS ── */
+.tslots{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
+.tslot{
+  padding:12px 8px;border-radius:var(--radius-sm);border:1.5px solid var(--line);
+  background:var(--surface);text-align:center;cursor:pointer;
+  font-size:14px;font-weight:600;color:var(--ink2);font-family:inherit;
+  transition:all .12s;user-select:none;min-height:48px;display:flex;align-items:center;justify-content:center;
+}
+.tslot:hover{border-color:var(--blue-mid);color:var(--blue)}
+.tslot.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.25)}
+
+/* ── SELECTED SUMMARY ── */
+.sel-summary{
+  margin-top:14px;padding:12px 16px;background:var(--blue-light);
+  border-radius:var(--radius-sm);font-size:13px;color:var(--blue-dark);
+}
+.sel-summary strong{font-weight:700}
+
+/* ── ALERT ── */
+.alert{padding:12px 16px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.alert i{font-size:16px;flex-shrink:0;margin-top:1px}
+.alert-info{background:var(--blue-light);color:#1E40AF;border:1px solid var(--blue-mid)}
+.alert-success{background:var(--green-light);color:#166534;border:1px solid var(--green-mid)}
+.alert-warn{background:var(--amber-light);color:#92400E;border:1px solid var(--amber-mid)}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:48px 24px}
+.empty i{font-size:40px;color:var(--ink4);display:block;margin-bottom:10px}
+.empty p{font-size:14px;color:var(--ink3)}
+
+/* ── MODAL (no fixed!) ── */
+.modal-wrap{
+  display:none;position:fixed;inset:0;z-index:200;
+  align-items:flex-end;justify-content:center;
+  background:rgba(0,0,0,.4);
+}
+.modal-wrap.on{display:flex}
+.modal{
+  background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:500px;
+  padding:24px 20px 40px;
+}
+@media(min-width:520px){
+  .modal-wrap{align-items:center}
+  .modal{border-radius:20px;margin:20px}
+}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:16px;font-weight:700}
+.modal-close{background:var(--line2);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3)}
+.modal-close i{font-size:18px}
+.modal-time{background:var(--blue-light);border-radius:var(--radius-sm);padding:16px;text-align:center;margin-bottom:16px}
+.modal-time-txt{font-size:18px;font-weight:800;color:var(--ink)}
+.modal-foot{display:flex;gap:8px;margin-top:20px}
+.modal-foot .btn{flex:1}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:#1F2937;color:#fff;padding:12px 20px;border-radius:30px;
+  font-size:14px;z-index:500;transition:transform .22s ease;
+  white-space:nowrap;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2);
+}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+/* ── LOADING ── */
+.loading-wrap{
+  display:none;position:fixed;inset:0;background:rgba(255,255,255,.8);
+  z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:14px;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.loading-wrap.on{display:flex}
+.spin{
+  width:36px;height:36px;border:3px solid var(--blue-mid);
+  border-top-color:var(--blue);border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:14px;color:var(--ink3);font-weight:500}
+
+/* ── FAB (mobile add button) ── */
+.fab{
+  display:none;position:fixed;bottom:24px;right:20px;z-index:40;
+  background:var(--blue);color:#fff;border:none;border-radius:50%;
+  width:56px;height:56px;font-size:28px;cursor:pointer;
+  box-shadow:0 4px 20px rgba(37,99,235,.4);align-items:center;justify-content:center;
+  transition:transform .15s,box-shadow .15s;
+}
+.fab:active{transform:scale(.93)}
+.fab i{font-size:24px}
+
+/* ── DIVIDER ── */
+.div{border:none;border-top:1px solid var(--line);margin:16px 0}
+
+/* ── SETUP GUIDE ── */
+.guide-steps{counter-reset:step}
+.guide-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.guide-step:last-child{margin-bottom:0}
+.step-num{
+  width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;
+  font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.step-txt{font-size:14px;color:var(--ink2);line-height:1.5}
+.step-txt code{background:var(--line2);padding:1px 5px;border-radius:4px;font-size:12px;color:var(--ink)}
+
+/* ── RESP. MOBILE ── */
+@media(max-width:640px){
+  .hdr{padding:0 16px}
+  .hdr-logo span.hdr-txt{display:none}
+  .page,.page-sm{padding:16px 14px 80px}
+  .stats{grid-template-columns:1fr 1fr}
+  .stats .stat:last-child{display:none}
+  .aslot-names{display:none}
+  .pg-title{font-size:17px}
+  .fab{display:flex}
+  .fab-hide .fab{display:none}
+  .tslots{grid-template-columns:repeat(auto-fill,minmax(72px,1fr))}
+}
+@media(min-width:641px){
+  .fab{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-logo">
+    <i class="ti ti-calendar-event" aria-hidden="true"></i>
+    <span class="hdr-txt">면접 일정 조율</span>
+    <span class="hdr-pill">대웅바이오</span>
+  </div>
+  <nav class="hdr-nav" id="headerNav">
+    <button class="hdr-btn on" id="navAdmin" onclick="showView('admin')"><i class="ti ti-layout-list" aria-hidden="true"></i>세션</button>
+    <button class="hdr-btn" id="navSetup" onclick="showView('setup')"><i class="ti ti-settings" aria-hidden="true"></i>설정</button>
+  </nav>
+</header>
+
+<div class="loading-wrap" id="loadingWrap">
+  <div class="spin"></div>
+  <p class="loading-txt" id="loadingTxt">처리 중...</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- VIEW: ADMIN LIST                            -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="view on" id="viewAdmin">
+  <div class="page">
+    <div class="pg-head">
+      <div>
+        <div class="pg-title">면접 세션</div>
+        <div class="pg-sub">세션을 만들고 링크를 공유하세요</div>
+      </div>
+      <button class="btn btn-primary btn-sm desktop-add" onclick="showView('create')">
+        <i class="ti ti-plus" aria-hidden="true"></i>새 세션
+      </button>
+    </div>
+
+    <div class="alert alert-warn" id="apiNotice" style="display:none">
+      <i class="ti ti-alert-circle" aria-hidden="true"></i>
+      <span>Apps Script URL이 없습니다. <a href="#" onclick="showView('setup');return false" style="font-weight:700;color:inherit">설정</a>에서 먼저 입력해주세요.</span>
+    </div>
+
+    <div id="sessionListArea">
+      <div class="empty"><i class="ti ti-loader" aria-hidden="true"></i><p>불러오는 중...</p></div>
+    </div>
+  </div>
+
+  <button class="fab" onclick="showView('create')" aria-label="새 세션 만들기">
+    <i class="ti ti-plus" aria-hidden="true"></i>
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- VIEW: CREATE SESSION                        -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="view" id="viewCreate">
+  <div class="page-sm">
+    <button class="back-btn" onclick="showView('admin')"><i class="ti ti-arrow-left" aria-hidden="true"></i>목록으로</button>
+    <div class="pg-head" style="margin-bottom:16px">
+      <div class="pg-title">새 면접 세션</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-label"><i class="ti ti-info-circle" aria-hidden="true"></i>기본 정보</span></div>
+      <div class="card-body">
+        <div class="fg">
+          <label class="fl">세션 제목 <span class="req">*</span></label>
+          <input class="fc" id="createTitle" placeholder="예: 2026년 하반기 채용 면접" />
+        </div>
+        <div class="fg">
+          <label class="fl">채용 포지션</label>
+          <input class="fc" id="createPosition" placeholder="예: 바이오QA팀 관리약사" />
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <label class="fl">관리자 비밀번호 <span class="req">*</span></label>
+          <input class="fc" id="createPassword" type="password" placeholder="관리자 전용 비밀번호" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-label"><i class="ti ti-calendar" aria-hidden="true"></i>일정 범위</span></div>
+      <div class="card-body">
+        <div class="fr" style="margin-bottom:16px">
+          <div class="fg" style="margin-bottom:0">
+            <label class="fl">시작 날짜 <span class="req">*</span></label>
+            <input class="fc" id="createDateStart" type="date" />
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label class="fl">종료 날짜 <span class="req">*</span></label>
+            <input class="fc" id="createDateEnd" type="date" />
+          </div>
+        </div>
+        <div class="fr" style="margin-bottom:16px">
+          <div class="fg" style="margin-bottom:0">
+            <label class="fl">시작 시간 <span class="req">*</span></label>
+            <input class="fc" id="createTimeStart" type="time" value="09:00" />
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label class="fl">종료 시간 <span class="req">*</span></label>
+            <input class="fc" id="createTimeEnd" type="time" value="18:00" />
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <label class="fl">시간 단위</label>
+          <select class="fc" id="createSlotMinutes">
+            <option value="30">30분 단위</option>
+            <option value="60" selected>1시간 단위</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="createSession()" style="height:52px;font-size:15px">
+      <i class="ti ti-check" aria-hidden="true"></i>세션 생성하기
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- VIEW: SESSION DETAIL (ADMIN)                -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="view" id="viewDetail">
+  <div class="page">
+    <button class="back-btn" onclick="goBackToAdmin()"><i class="ti ti-arrow-left" aria-hidden="true"></i>목록으로</button>
+
+    <div id="confirmedBanner" style="display:none" class="conf-banner">
+      <i class="ti ti-circle-check" aria-hidden="true"></i>
+      <h3 id="confirmedBannerTime">-</h3>
+      <p>면접 시간이 확정되었습니다</p>
+    </div>
+
+    <div class="pg-head" style="margin-bottom:16px">
+      <div>
+        <div class="pg-title" id="detailTitle">-</div>
+        <div class="pg-sub" id="detailPosition"></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="refreshDetail()">
+        <i class="ti ti-refresh" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-label"><i class="ti ti-link" aria-hidden="true"></i>참여 링크</span>
+      </div>
+      <div class="card-body">
+        <div class="lbox">
+          <div class="lbox-role"><i class="ti ti-user" aria-hidden="true"></i>후보자</div>
+          <div class="lbox-url" id="candidateLink">-</div>
+          <button class="btn btn-ghost btn-sm lbox-copy" onclick="copyLink('candidateLink')"><i class="ti ti-copy" aria-hidden="true"></i></button>
+        </div>
+        <div class="lbox">
+          <div class="lbox-role"><i class="ti ti-briefcase" aria-hidden="true"></i>면접관</div>
+          <div class="lbox-url" id="interviewerLink">-</div>
+          <button class="btn btn-ghost btn-sm lbox-copy" onclick="copyLink('interviewerLink')"><i class="ti ti-copy" aria-hidden="true"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-num" id="statCandidate">0</div><div class="stat-lbl">후보자 응답</div></div>
+      <div class="stat"><div class="stat-num" id="statInterviewer">0</div><div class="stat-lbl">면접관 응답</div></div>
+      <div class="stat"><div class="stat-num" id="statBest">-</div><div class="stat-lbl">최다 가능 인원</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-label"><i class="ti ti-chart-bar" aria-hidden="true"></i>가능 시간 분석</span></div>
+      <div class="card-body">
+        <div id="analysisArea"><div class="empty"><i class="ti ti-clock" aria-hidden="true"></i><p>아직 응답이 없습니다</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-label"><i class="ti ti-users" aria-hidden="true"></i>응답자 현황</span></div>
+      <div class="card-body">
+        <div id="respondentArea"><div class="empty"><i class="ti ti-user-plus" aria-hidden="true"></i><p>아직 응답이 없습니다</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- VIEW: RESPOND (CANDIDATE / INTERVIEWER)     -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="view" id="viewRespond">
+  <div class="page-sm">
+
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-body" style="padding:16px 20px;display:flex;align-items:center;gap:12px">
+        <div style="flex:1">
+          <div style="font-size:16px;font-weight:700;color:var(--ink)" id="respondSessionTitle">-</div>
+          <div style="font-size:12px;color:var(--ink3);margin-top:2px" id="respondSessionPosition"></div>
+        </div>
+        <span class="badge" id="respondRoleBadge">후보자</span>
+      </div>
+    </div>
+
+    <div id="alreadySubmitted" style="display:none">
+      <div class="alert alert-success"><i class="ti ti-circle-check" aria-hidden="true"></i>제출 완료! 수정하려면 다시 선택 후 제출하세요.</div>
+    </div>
+
+    <div id="slotConfirmed" style="display:none" class="conf-banner">
+      <i class="ti ti-circle-check" aria-hidden="true"></i>
+      <h3 id="confirmedSlotText">-</h3>
+      <p>면접 시간이 확정되었습니다</p>
+    </div>
+
+    <div class="card" id="respondFormCard">
+      <div class="card-head"><span class="card-label"><i class="ti ti-user" aria-hidden="true"></i>기본 정보</span></div>
+      <div class="card-body">
+        <div class="fg">
+          <label class="fl">이름 <span class="req">*</span></label>
+          <input class="fc" id="respondName" placeholder="이름 입력" />
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <label class="fl">이메일</label>
+          <input class="fc" id="respondEmail" type="email" placeholder="이메일 주소 (선택)" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="slotPickerCard">
+      <div class="card-head">
+        <span class="card-label"><i class="ti ti-calendar-check" aria-hidden="true"></i>가능한 시간 선택</span>
+        <span style="font-size:11px;color:var(--ink3)">여러 개 선택 가능</span>
+      </div>
+      <div class="card-body">
+        <div class="dtabs" id="respondDateTabs"></div>
+        <div class="tslots" id="respondTimeSlots"></div>
+        <div class="sel-summary" id="selectedSummary">선택된 시간: <strong>0개</strong></div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" onclick="submitResponse()" id="respondSubmitBtn" style="height:52px;font-size:15px">
+      <i class="ti ti-send" aria-hidden="true"></i>가능한 시간 제출
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- VIEW: SETUP                                 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="view" id="viewSetup">
+  <div class="page-sm">
+    <div class="pg-head">
+      <div class="pg-title">설정</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-label"><i class="ti ti-brand-google" aria-hidden="true"></i>Apps Script 연동</span></div>
+      <div class="card-body">
+        <div class="alert alert-info" style="margin-bottom:16px">
+          <i class="ti ti-info-circle" aria-hidden="true"></i>
+          Apps Script 배포 후 생성된 웹 앱 URL을 입력하세요.
+        </div>
+        <div class="fg">
+          <label class="fl">Apps Script 웹 앱 URL</label>
+          <input class="fc" id="setupApiUrl" placeholder="https://script.google.com/macros/s/.../exec" />
+        </div>
+        <div class="fg" style="margin-bottom:16px">
+          <label class="fl">이 앱의 URL</label>
+          <input class="fc" id="setupAppUrl" placeholder="https://..." />
+          <p style="font-size:11px;color:var(--ink3);margin-top:5px">후보자·면접관에게 공유할 이 HTML 파일의 URL</p>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()"><i class="ti ti-device-floppy" aria-hidden="true"></i>저장</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-label"><i class="ti ti-list-check" aria-hidden="true"></i>세팅 가이드</span></div>
+      <div class="card-body">
+        <div class="guide-step"><div class="step-num">1</div><div class="step-txt">Google Sheets 새 파일 생성</div></div>
+        <div class="guide-step"><div class="step-num">2</div><div class="step-txt">메뉴 → <code>확장 프로그램 → Apps Script</code></div></div>
+        <div class="guide-step"><div class="step-num">3</div><div class="step-txt">제공된 <code>apps-script.js</code> 전체 붙여넣고 저장</div></div>
+        <div class="guide-step"><div class="step-num">4</div><div class="step-txt"><code>배포 → 새 배포 → 웹 앱</code></div></div>
+        <div class="guide-step"><div class="step-num">5</div><div class="step-txt">실행 계정: <code>나</code>, 액세스: <code>모든 사용자</code></div></div>
+        <div class="guide-step"><div class="step-num">6</div><div class="step-txt">배포 후 URL을 위 칸에 입력하고 저장</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MODAL: CONFIRM SLOT                         -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="modal-wrap" id="confirmModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">면접 시간 확정</span>
+      <button class="modal-close" onclick="closeModal('confirmModal')"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <p style="font-size:14px;color:var(--ink3);margin-bottom:16px">아래 시간으로 확정하시겠어요?</p>
+    <div class="modal-time"><div class="modal-time-txt" id="confirmModalTime">-</div></div>
+    <p style="font-size:12px;color:var(--ink4)">확정 후 후보자·면접관 화면에 결과가 표시됩니다.</p>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('confirmModal')">취소</button>
+      <button class="btn btn-success" onclick="doConfirmSlot()"><i class="ti ti-check" aria-hidden="true"></i>확정하기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let STATE={apiUrl:'',appUrl:'',currentSessionId:null,currentSession:null,currentRole:null,sessions:[],responses:[],selectedSlots:new Set(),currentDateIdx:0,availableDates:[],pendingConfirmSlot:null};
+
+window.onload=function(){
+  loadSettings();
+  const p=new URLSearchParams(window.location.search);
+  const sid=p.get('session'),role=p.get('role');
+  if(sid&&role){
+    document.getElementById('headerNav').style.display='none';
+    STATE.currentSessionId=sid;STATE.currentRole=role;
+    loadRespondView();
+  }else{checkApiSetup();loadSessions();}
+};
+
+function loadSettings(){
+  STATE.apiUrl=localStorage.getItem('dw_api_url')||'';
+  STATE.appUrl=localStorage.getItem('dw_app_url')||window.location.href.split('?')[0];
+  document.getElementById('setupApiUrl').value=STATE.apiUrl;
+  document.getElementById('setupAppUrl').value=STATE.appUrl;
+}
+function saveSettings(){
+  STATE.apiUrl=document.getElementById('setupApiUrl').value.trim();
+  STATE.appUrl=document.getElementById('setupAppUrl').value.trim();
+  localStorage.setItem('dw_api_url',STATE.apiUrl);
+  localStorage.setItem('dw_app_url',STATE.appUrl);
+  showToast('설정이 저장되었습니다');checkApiSetup();showView('admin');loadSessions();
+}
+function checkApiSetup(){
+  document.getElementById('apiNotice').style.display=STATE.apiUrl?'none':'flex';
+}
+
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('view'+cap(name)).classList.add('on');
+  document.querySelectorAll('.hdr-btn').forEach(b=>b.classList.remove('on'));
+  const nb=document.getElementById('nav'+cap(name));if(nb)nb.classList.add('on');
+  window.scrollTo(0,0);
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function goBackToAdmin(){showView('admin');loadSessions();}
+
+async function apiGet(params){
+  if(!STATE.apiUrl){showToast('API URL을 먼저 설정해주세요');return null;}
+  const url=STATE.apiUrl+'?'+new URLSearchParams(params).toString();
+  const res=await fetch(url);return await res.json();
+}
+async function apiPost(body){
+  // POST 대신 GET으로 전송 (CORS 우회)
+  if(!STATE.apiUrl){showToast('API URL을 먼저 설정해주세요');return null;}
+  const params={action:body.action, body:JSON.stringify(body)};
+  const url=STATE.apiUrl+'?'+new URLSearchParams(params).toString();
+  const res=await fetch(url);return await res.json();
+}
+
+async function loadSessions(){
+  if(!STATE.apiUrl){renderSessionList([]);return;}
+  const data=await apiGet({action:'getAllSessions'});
+  if(data&&data.success){STATE.sessions=data.sessions||[];renderSessionList(STATE.sessions);}
+  else renderSessionList([]);
+}
+
+function renderSessionList(sessions){
+  const area=document.getElementById('sessionListArea');
+  if(!sessions||sessions.length===0){
+    area.innerHTML=`<div class="empty"><i class="ti ti-calendar-off"></i><p>아직 세션이 없습니다.<br>새 세션을 만들어보세요.</p></div>`;return;
+  }
+  area.innerHTML=sessions.map(s=>{
+    const confirmed=s.status==='confirmed';
+    return`<div class="scard" onclick="openSession('${s.sessionId}')">
+      <div class="scard-icon"><i class="ti ti-calendar-event" aria-hidden="true"></i></div>
+      <div class="scard-body">
+        <div class="scard-title">${esc(s.title)}</div>
+        <div class="scard-meta">
+          <span>${esc(s.position)||'포지션 미지정'}</span>
+          <span>${s.dateStart} ~ ${s.dateEnd}</span>
+          ${confirmed?'<span class="badge badge-green"><i class="ti ti-check"></i>확정완료</span>':'<span class="badge badge-blue">진행중</span>'}
+        </div>
+      </div>
+      <div class="scard-arrow"><i class="ti ti-chevron-right" aria-hidden="true"></i></div>
+    </div>`;
+  }).join('');
+}
+
+async function createSession(){
+  const title=document.getElementById('createTitle').value.trim();
+  const position=document.getElementById('createPosition').value.trim();
+  const password=document.getElementById('createPassword').value.trim();
+  const dateStart=document.getElementById('createDateStart').value;
+  const dateEnd=document.getElementById('createDateEnd').value;
+  const timeStart=document.getElementById('createTimeStart').value;
+  const timeEnd=document.getElementById('createTimeEnd').value;
+  const slotMinutes=parseInt(document.getElementById('createSlotMinutes').value);
+  if(!title||!password||!dateStart||!dateEnd||!timeStart||!timeEnd){showToast('필수 항목을 모두 입력해주세요');return;}
+  if(dateStart>dateEnd){showToast('시작 날짜가 종료 날짜보다 늦을 수 없습니다');return;}
+  showLoading('세션 생성 중...');
+  const data=await apiPost({action:'createSession',title,position,dateRange:{start:dateStart,end:dateEnd},timeRange:{start:timeStart,end:timeEnd},slotMinutes,adminPassword:password});
+  hideLoading();
+  if(data&&data.success){showToast('세션이 생성되었습니다');openSession(data.sessionId);}
+  else showToast('세션 생성 실패: '+(data?.error||'오류'));
+}
+
+async function openSession(sessionId){
+  STATE.currentSessionId=sessionId;showView('detail');await refreshDetail();
+}
+
+async function refreshDetail(){
+  showLoading('응답 불러오는 중...');
+  const[sd,rd]=await Promise.all([
+    apiGet({action:'getSession',sessionId:STATE.currentSessionId}),
+    apiGet({action:'getResponses',sessionId:STATE.currentSessionId}),
+  ]);
+  hideLoading();
+  if(!sd||!sd.success){showToast('세션 로드 실패');return;}
+  const session=sd.session;STATE.currentSession=session;STATE.responses=rd?.responses||[];
+  document.getElementById('detailTitle').textContent=session.title;
+  document.getElementById('detailPosition').textContent=session.position||'';
+  const cb=document.getElementById('confirmedBanner');
+  if(session.confirmedSlot){cb.style.display='block';document.getElementById('confirmedBannerTime').textContent=formatSlot(session.confirmedSlot);}
+  else cb.style.display='none';
+  const baseUrl=STATE.appUrl||window.location.href.split('?')[0];
+  document.getElementById('candidateLink').textContent=`${baseUrl}?session=${STATE.currentSessionId}&role=candidate`;
+  document.getElementById('interviewerLink').textContent=`${baseUrl}?session=${STATE.currentSessionId}&role=interviewer`;
+  const cands=STATE.responses.filter(r=>r.role==='candidate');
+  const ints=STATE.responses.filter(r=>r.role==='interviewer');
+  document.getElementById('statCandidate').textContent=cands.length;
+  document.getElementById('statInterviewer').textContent=ints.length;
+  renderAnalysis(session,STATE.responses);renderRespondents(STATE.responses);
+}
+
+function renderAnalysis(session,responses){
+  const area=document.getElementById('analysisArea');
+  if(responses.length===0){area.innerHTML=`<div class="empty"><i class="ti ti-clock"></i><p>아직 응답이 없습니다</p></div>`;document.getElementById('statBest').textContent='-';return;}
+  const slotMap={},slotNames={};
+  responses.forEach(r=>(r.selectedSlots||[]).forEach(slot=>{
+    if(!slotMap[slot]){slotMap[slot]=0;slotNames[slot]=[];}
+    slotMap[slot]++;slotNames[slot].push(`${r.name}(${r.role==='candidate'?'후보':'면접관'})`);
+  }));
+  const sorted=Object.entries(slotMap).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('statBest').textContent=sorted.length>0?sorted[0][1]+'명':'-';
+  area.innerHTML=sorted.map(([slot,count],idx)=>{
+    const isConfirmed=session.confirmedSlot===slot;
+    const isBest=idx===0&&!isConfirmed;
+    const pct=Math.round((count/responses.length)*100);
+    return`<div class="aslot ${isConfirmed?'is-confirmed':isBest?'is-best':''}" onclick="openConfirmModal('${slot}')">
+      <div class="aslot-time">${formatSlot(slot)}</div>
+      <div class="aslot-bar"><div class="aslot-fill" style="width:${pct}%"></div></div>
+      <div class="aslot-names">${slotNames[slot].join(', ')}</div>
+      <div class="aslot-count">${count}명 ${isConfirmed?'✓':isBest?'★':''}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderRespondents(responses){
+  const area=document.getElementById('respondentArea');
+  if(responses.length===0){area.innerHTML=`<div class="empty"><i class="ti ti-user-plus"></i><p>아직 응답이 없습니다</p></div>`;return;}
+  area.innerHTML=responses.map(r=>`
+    <div class="ritem">
+      <span class="badge ${r.role==='candidate'?'badge-blue':'badge-pink'}">${r.role==='candidate'?'후보자':'면접관'}</span>
+      <span class="ritem-name">${esc(r.name)}</span>
+      <span class="ritem-cnt">${(r.selectedSlots||[]).length}개 선택</span>
+      ${r.email?`<span class="ritem-email">${esc(r.email)}</span>`:''}
+    </div>`).join('');
+}
+
+function openConfirmModal(slot){
+  STATE.pendingConfirmSlot=slot;
+  document.getElementById('confirmModalTime').textContent=formatSlot(slot);
+  document.getElementById('confirmModal').classList.add('on');
+}
+async function doConfirmSlot(){
+  closeModal('confirmModal');showLoading('확정 처리 중...');
+  const data=await apiPost({action:'confirmSlot',sessionId:STATE.currentSessionId,confirmedSlot:STATE.pendingConfirmSlot});
+  hideLoading();
+  if(data&&data.success){showToast('면접 시간이 확정되었습니다 ✓');refreshDetail();}
+  else showToast('확정 실패: '+(data?.error||'오류'));
+}
+function closeModal(id){document.getElementById(id).classList.remove('on');}
+
+async function loadRespondView(){
+  showLoading('일정 불러오는 중...');
+  const data=await apiGet({action:'getSession',sessionId:STATE.currentSessionId});
+  hideLoading();
+  if(!data||!data.success){showToast('세션을 찾을 수 없습니다');return;}
+  const session=data.session;STATE.currentSession=session;
+  const role=STATE.currentRole;
+  document.getElementById('respondRoleBadge').textContent=role==='candidate'?'후보자':'면접관';
+  document.getElementById('respondRoleBadge').className='badge '+(role==='candidate'?'badge-blue':'badge-pink');
+  document.getElementById('respondSessionTitle').textContent=session.title;
+  document.getElementById('respondSessionPosition').textContent=session.position||'';
+  if(session.confirmedSlot){
+    document.getElementById('slotConfirmed').style.display='block';
+    document.getElementById('confirmedSlotText').textContent=formatSlot(session.confirmedSlot);
+    document.getElementById('respondFormCard').style.display='none';
+    document.getElementById('slotPickerCard').style.display='none';
+    document.getElementById('respondSubmitBtn').style.display='none';
+    showView('respond');return;
+  }
+  STATE.availableDates=getDateRange(session.dateStart,session.dateEnd);
+  STATE.currentDateIdx=0;
+  renderDateTabs();renderTimeSlots();showView('respond');
+}
+
+function getDateRange(start,end){
+  const dates=[];let cur=new Date(start+'T00:00:00');const ed=new Date(end+'T00:00:00');
+  while(cur<=ed){dates.push(cur.toISOString().slice(0,10));cur.setDate(cur.getDate()+1);}
+  return dates;
+}
+function renderDateTabs(){
+  document.getElementById('respondDateTabs').innerHTML=STATE.availableDates.map((d,i)=>
+    `<button class="dtab ${i===STATE.currentDateIdx?'on':''}" onclick="selectDate(${i})">${formatDate(d)}</button>`
+  ).join('');
+}
+function selectDate(idx){STATE.currentDateIdx=idx;renderDateTabs();renderTimeSlots();}
+function renderTimeSlots(){
+  const session=STATE.currentSession;
+  const date=STATE.availableDates[STATE.currentDateIdx];
+  const slots=generateSlots(date,session.timeStart,session.timeEnd,parseInt(session.slotMinutes));
+  document.getElementById('respondTimeSlots').innerHTML=slots.map(slot=>
+    `<button class="tslot ${STATE.selectedSlots.has(slot)?'on':''}" onclick="toggleSlot('${slot}')">${slot.slice(11,16)}</button>`
+  ).join('');
+  updateSelectedSummary();
+}
+function generateSlots(date,timeStart,timeEnd,slotMinutes){
+  const slots=[];
+  const[sh,sm]=timeStart.split(':').map(Number);
+  const[eh,em]=timeEnd.split(':').map(Number);
+  let cur=sh*60+sm;const end=eh*60+em;
+  while(cur<end){
+    const h=String(Math.floor(cur/60)).padStart(2,'0');
+    const m=String(cur%60).padStart(2,'0');
+    slots.push(`${date}T${h}:${m}`);cur+=slotMinutes;
+  }
+  return slots;
+}
+function toggleSlot(slot){
+  STATE.selectedSlots.has(slot)?STATE.selectedSlots.delete(slot):STATE.selectedSlots.add(slot);
+  renderTimeSlots();
+}
+function updateSelectedSummary(){
+  const count=STATE.selectedSlots.size;
+  document.getElementById('selectedSummary').innerHTML=`선택된 시간: <strong>${count}개</strong>${count>0?' — '+Array.from(STATE.selectedSlots).sort().map(s=>formatSlot(s)).join(', '):''}`;
+}
+async function submitResponse(){
+  const name=document.getElementById('respondName').value.trim();
+  const email=document.getElementById('respondEmail').value.trim();
+  if(!name){showToast('이름을 입력해주세요');return;}
+  if(STATE.selectedSlots.size===0){showToast('가능한 시간을 하나 이상 선택해주세요');return;}
+  showLoading('제출 중...');
+  const data=await apiPost({action:'submitResponse',sessionId:STATE.currentSessionId,name,email,role:STATE.currentRole,selectedSlots:Array.from(STATE.selectedSlots).sort()});
+  hideLoading();
+  if(data&&data.success){document.getElementById('alreadySubmitted').style.display='block';showToast('제출 완료! 담당자가 확인 후 확정합니다');window.scrollTo(0,0);}
+  else showToast('제출 실패: '+(data?.error||'오류'));
+}
+
+function formatSlot(slot){
+  if(!slot)return'-';
+  const[date,time]=slot.split('T');
+  const d=new Date(date+'T00:00:00');
+  const days=['일','월','화','수','목','금','토'];
+  return`${date} (${days[d.getDay()]}) ${time}`;
+}
+function formatDate(dateStr){
+  const d=new Date(dateStr+'T00:00:00');
+  const days=['일','월','화','수','목','금','토'];
+  return`${d.getMonth()+1}/${d.getDate()} (${days[d.getDay()]})`;
+}
+function esc(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function copyLink(elementId){
+  const text=document.getElementById(elementId).textContent;
+  navigator.clipboard.writeText(text).then(()=>showToast('링크 복사 완료'));
+}
+function showLoading(txt){document.getElementById('loadingTxt').textContent=txt||'처리 중...';document.getElementById('loadingWrap').classList.add('on');}
+function hideLoading(){document.getElementById('loadingWrap').classList.remove('on');}
+let _tt;
+function showToast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');
+  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),3000);
+}
+</script>
+</body>
+</html>
