@@ -624,8 +624,10 @@ window.onload=function(){
   }else{checkApiSetup();loadSessions();}
 };
 
+const DEFAULT_API_URL='https://script.google.com/macros/s/AKfycbzMNJpaqWHMk0g7vZt-5Ubwnk0i4VM-6yTlWMoaWj0x_KzprizOCRn67AaaIR1YJLwWLA/exec';
+
 function loadSettings(){
-  STATE.apiUrl=localStorage.getItem('dw_api_url')||'';
+  STATE.apiUrl=localStorage.getItem('dw_api_url')||DEFAULT_API_URL;
   STATE.appUrl=localStorage.getItem('dw_app_url')||window.location.href.split('?')[0];
   document.getElementById('setupApiUrl').value=STATE.apiUrl;
   document.getElementById('setupAppUrl').value=STATE.appUrl;
