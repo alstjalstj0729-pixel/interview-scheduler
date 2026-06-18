@@ -536,15 +536,34 @@ select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
         <span style="font-size:11px;color:var(--ink3)">여러 개 선택 가능</span>
       </div>
       <div class="card-body">
-        <div class="dtabs" id="respondDateTabs"></div>
-        <div class="tslots" id="respondTimeSlots"></div>
-        <div class="sel-summary" id="selectedSummary">선택된 시간: <strong>0개</strong></div>
+        <div id="noInterviewerSlots" style="display:none">
+          <div class="alert alert-warn"><i class="ti ti-alert-circle" aria-hidden="true"></i>면접관이 아직 가능한 시간을 선택하지 않았습니다. 잠시 후 다시 시도해주세요.</div>
+        </div>
+        <div id="slotPickerInner">
+          <div class="tslots" id="respondTimeSlots"></div>
+          <div class="sel-summary" id="selectedSummary">선택된 시간: <strong>0개</strong></div>
+        </div>
       </div>
     </div>
 
-    <button class="btn btn-primary btn-block" onclick="submitResponse()" id="respondSubmitBtn" style="height:52px;font-size:15px">
-      <i class="ti ti-send" aria-hidden="true"></i>가능한 시간 제출
-    </button>
+    <div class="card" id="unavailableCard" style="display:none">
+      <div class="card-head"><span class="card-label"><i class="ti ti-edit" aria-hidden="true"></i>가능한 일정 직접 입력</span></div>
+      <div class="card-body">
+        <div class="fg" style="margin-bottom:0">
+          <label class="fl">가능한 날짜/시간을 자유롭게 작성해주세요 <span class="req">*</span></label>
+          <textarea class="fc" id="unavailableText" rows="4" placeholder="예) 6/20(금) 오후 2시 이후, 6/23(월) 오전 중 가능합니다." style="resize:vertical"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:0" id="respondBtns">
+      <button class="btn btn-ghost btn-block" onclick="toggleUnavailable()" id="unavailableBtn" style="height:52px;font-size:14px">
+        <i class="ti ti-x" aria-hidden="true"></i>모두 불가
+      </button>
+      <button class="btn btn-primary btn-block" onclick="submitResponse()" id="respondSubmitBtn" style="height:52px;font-size:15px">
+        <i class="ti ti-send" aria-hidden="true"></i>제출
+      </button>
+    </div>
   </div>
 </div>
 
@@ -611,7 +630,7 @@ select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 </div>
 
 <script>
-let STATE={apiUrl:'',appUrl:'',currentSessionId:null,currentSession:null,currentRole:null,sessions:[],responses:[],selectedSlots:new Set(),currentDateIdx:0,availableDates:[],pendingConfirmSlot:null};
+let STATE={apiUrl:'',appUrl:'',currentSessionId:null,currentSession:null,currentRole:null,sessions:[],responses:[],selectedSlots:new Set(),currentDateIdx:0,availableDates:[],pendingConfirmSlot:null,isUnavailable:false,interviewerSlots:[]};
 
 window.onload=function(){
   loadSettings();
@@ -767,13 +786,16 @@ function renderAnalysis(session,responses){
 function renderRespondents(responses){
   const area=document.getElementById('respondentArea');
   if(responses.length===0){area.innerHTML=`<div class="empty"><i class="ti ti-user-plus"></i><p>아직 응답이 없습니다</p></div>`;return;}
-  area.innerHTML=responses.map(r=>`
-    <div class="ritem">
+  area.innerHTML=responses.map(r=>{
+    const isUnavail=(r.selectedSlots||[]).includes('UNAVAILABLE');
+    const cnt=isUnavail?'<span style="color:var(--red);font-size:12px;font-weight:600">모두 불가</span>':`<span class="ritem-cnt">${(r.selectedSlots||[]).length}개 선택</span>`;
+    return`<div class="ritem">
       <span class="badge ${r.role==='candidate'?'badge-blue':'badge-pink'}">${r.role==='candidate'?'후보자':'면접관'}</span>
       <span class="ritem-name">${esc(r.name)}</span>
-      <span class="ritem-cnt">${(r.selectedSlots||[]).length}개 선택</span>
+      ${cnt}
       ${r.email?`<span class="ritem-email">${esc(r.email)}</span>`:''}
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function openConfirmModal(slot){
@@ -809,15 +831,49 @@ async function loadRespondView(){
     document.getElementById('respondSubmitBtn').style.display='none';
     showView('respond');return;
   }
-  STATE.availableDates=getDateRange(session.dateStart,session.dateEnd);
-  STATE.currentDateIdx=0;
-  renderDateTabs();renderTimeSlots();showView('respond');
+  if(role==='candidate'){
+    // 면접관 응답 가져와서 전원 교집합 계산
+    showLoading('면접관 가능 시간 확인 중...');
+    const rdata=await apiGet({action:'getResponses',sessionId:STATE.currentSessionId});
+    hideLoading();
+    const interviewers=(rdata?.responses||[]).filter(r=>r.role==='interviewer');
+    if(interviewers.length===0){
+      STATE.interviewerSlots=[];
+    } else {
+      // 전원 교집합
+      let common=new Set(interviewers[0].selectedSlots||[]);
+      for(let i=1;i<interviewers.length;i++){
+        const s=new Set(interviewers[i].selectedSlots||[]);
+        common=new Set([...common].filter(x=>s.has(x)));
+      }
+      STATE.interviewerSlots=Array.from(common).sort();
+    }
+    if(STATE.interviewerSlots.length===0){
+      document.getElementById('noInterviewerSlots').style.display='block';
+      document.getElementById('slotPickerInner').style.display='none';
+    } else {
+      renderCandidateSlots();
+    }
+  } else {
+    STATE.availableDates=getDateRange(session.dateStart,session.dateEnd);
+    STATE.currentDateIdx=0;
+    renderDateTabs();renderTimeSlots();
+  }
+  showView('respond');
 }
 
 function getDateRange(start,end){
   const dates=[];let cur=new Date(start+'T00:00:00');const ed=new Date(end+'T00:00:00');
   while(cur<=ed){dates.push(cur.toISOString().slice(0,10));cur.setDate(cur.getDate()+1);}
   return dates;
+}
+function renderCandidateSlots(){
+  const slots=STATE.interviewerSlots;
+  const container=document.getElementById('respondTimeSlots');
+  container.innerHTML=slots.map(slot=>
+    `<button class="tslot ${STATE.selectedSlots.has(slot)?'on':''}" onclick="toggleSlot('${slot}')" style="min-width:140px;font-size:13px">${formatSlot(slot)}</button>`
+  ).join('');
+  updateSelectedSummary();
 }
 function renderDateTabs(){
   document.getElementById('respondDateTabs').innerHTML=STATE.availableDates.map((d,i)=>
@@ -846,6 +902,26 @@ function generateSlots(date,timeStart,timeEnd,slotMinutes){
   }
   return slots;
 }
+function toggleUnavailable(){
+  STATE.isUnavailable=!STATE.isUnavailable;
+  const btn=document.getElementById('unavailableBtn');
+  const unavailCard=document.getElementById('unavailableCard');
+  const slotCard=document.getElementById('slotPickerCard');
+  const submitBtn=document.getElementById('respondSubmitBtn');
+  if(STATE.isUnavailable){
+    btn.innerHTML='<i class="ti ti-arrow-left"></i> 돌아가기';
+    btn.classList.remove('btn-ghost');btn.classList.add('btn-danger');
+    unavailCard.style.display='block';
+    slotCard.style.display='none';
+    STATE.selectedSlots.clear();
+  } else {
+    btn.innerHTML='<i class="ti ti-x"></i> 모두 불가';
+    btn.classList.add('btn-ghost');btn.classList.remove('btn-danger');
+    unavailCard.style.display='none';
+    slotCard.style.display='block';
+    document.getElementById('unavailableText').value='';
+  }
+}
 function toggleSlot(slot){
   STATE.selectedSlots.has(slot)?STATE.selectedSlots.delete(slot):STATE.selectedSlots.add(slot);
   renderTimeSlots();
@@ -860,9 +936,25 @@ async function submitResponse(){
   if(!name){showToast('이름을 입력해주세요');return;}
   if(!email){showToast('이메일을 입력해주세요');return;}
   if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){showToast('올바른 이메일 형식을 입력해주세요');return;}
-  if(STATE.selectedSlots.size===0){showToast('가능한 시간을 하나 이상 선택해주세요');return;}
+
+  let selectedSlots=[];
+  let unavailableNote='';
+
+  if(STATE.isUnavailable){
+    unavailableNote=document.getElementById('unavailableText').value.trim();
+    if(!unavailableNote){showToast('가능한 일정을 입력해주세요');return;}
+    selectedSlots=['UNAVAILABLE'];
+  } else {
+    if(STATE.currentRole==='candidate'&&STATE.interviewerSlots.length>0){
+      if(STATE.selectedSlots.size===0){showToast('가능한 시간을 하나 이상 선택해주세요');return;}
+    } else if(STATE.selectedSlots.size===0){
+      showToast('가능한 시간을 하나 이상 선택해주세요');return;
+    }
+    selectedSlots=Array.from(STATE.selectedSlots).sort();
+  }
+
   showLoading('제출 중...');
-  const data=await apiPost({action:'submitResponse',sessionId:STATE.currentSessionId,name,email,role:STATE.currentRole,selectedSlots:Array.from(STATE.selectedSlots).sort()});
+  const data=await apiPost({action:'submitResponse',sessionId:STATE.currentSessionId,name,email,role:STATE.currentRole,selectedSlots,unavailableNote});
   hideLoading();
   if(data&&data.success){document.getElementById('alreadySubmitted').style.display='block';showToast('제출 완료! 담당자가 확인 후 확정합니다');window.scrollTo(0,0);}
   else showToast('제출 실패: '+(data?.error||'오류'));
