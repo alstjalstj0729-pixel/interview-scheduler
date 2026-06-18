@@ -381,10 +381,7 @@ select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
           <label class="fl">채용 포지션</label>
           <input class="fc" id="createPosition" placeholder="예: 바이오QA팀 관리약사" />
         </div>
-        <div class="fg" style="margin-bottom:0">
-          <label class="fl">관리자 비밀번호 <span class="req">*</span></label>
-          <input class="fc" id="createPassword" type="password" placeholder="관리자 전용 비밀번호" />
-        </div>
+
       </div>
     </div>
 
@@ -718,13 +715,13 @@ function renderSessionList(sessions){
 async function createSession(){
   const title=document.getElementById('createTitle').value.trim();
   const position=document.getElementById('createPosition').value.trim();
-  const password=document.getElementById('createPassword').value.trim();
+  const password='';
   const dateStart=document.getElementById('createDateStart').value;
   const dateEnd=document.getElementById('createDateEnd').value;
   const timeStart=document.getElementById('createTimeStart').value;
   const timeEnd=document.getElementById('createTimeEnd').value;
   const slotMinutes=parseInt(document.getElementById('createSlotMinutes').value);
-  if(!title||!password||!dateStart||!dateEnd||!timeStart||!timeEnd){showToast('필수 항목을 모두 입력해주세요');return;}
+  if(!title||!dateStart||!dateEnd||!timeStart||!timeEnd){showToast('필수 항목을 모두 입력해주세요');return;}
   if(dateStart>dateEnd){showToast('시작 날짜가 종료 날짜보다 늦을 수 없습니다');return;}
   showLoading('세션 생성 중...');
   const data=await apiPost({action:'createSession',title,position,dateRange:{start:dateStart,end:dateEnd},timeRange:{start:timeStart,end:timeEnd},slotMinutes,adminPassword:password});
