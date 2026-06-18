@@ -524,7 +524,7 @@ select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
           <input class="fc" id="respondName" placeholder="이름 입력" />
         </div>
         <div class="fg" style="margin-bottom:0">
-          <label class="fl">이메일 <span class="req">*</span></label>
+          <label class="fl" id="emailLabel">이메일 <span class="req" id="emailReq">*</span></label>
           <input class="fc" id="respondEmail" type="email" placeholder="이메일 주소" />
         </div>
       </div>
@@ -822,6 +822,11 @@ async function loadRespondView(){
   const role=STATE.currentRole;
   document.getElementById('respondRoleBadge').textContent=role==='candidate'?'후보자':'면접관';
   document.getElementById('respondRoleBadge').className='badge '+(role==='candidate'?'badge-blue':'badge-pink');
+  // 면접관은 이메일 선택
+  if(role==='interviewer'){
+    document.getElementById('emailReq').style.display='none';
+    document.getElementById('respondEmail').placeholder='이메일 주소 (선택)';
+  }
   document.getElementById('respondSessionTitle').textContent=session.title;
   document.getElementById('respondSessionPosition').textContent=session.position||'';
   if(session.confirmedSlot){
@@ -874,10 +879,30 @@ function getDateRange(start,end){
 function renderCandidateSlots(){
   const slots=STATE.interviewerSlots;
   const container=document.getElementById('respondTimeSlots');
-  container.innerHTML=slots.map(slot=>
-    `<button class="tslot ${STATE.selectedSlots.has(slot)?'on':''}" onclick="toggleSlot('${slot}')" style="min-width:140px;font-size:13px">${formatSlot(slot)}</button>`
-  ).join('');
+  // 날짜별로 그룹핑해서 표시
+  const byDate={};
+  slots.forEach(slot=>{
+    const date=slot.split('T')[0];
+    if(!byDate[date])byDate[date]=[];
+    byDate[date].push(slot);
+  });
+  let html='';
+  Object.keys(byDate).sort().forEach(date=>{
+    const d=new Date(date+'T00:00:00');
+    const days=['일','월','화','수','목','금','토'];
+    const label=(d.getMonth()+1)+'/'+d.getDate()+'('+days[d.getDay()]+')';
+    html+=`<div style="width:100%;font-size:12px;font-weight:700;color:var(--ink3);margin:10px 0 6px;padding-top:8px;border-top:1px solid var(--line)">${label}</div>`;
+    byDate[date].forEach(slot=>{
+      const time=slot.slice(11,16);
+      html+=`<button class="tslot ${STATE.selectedSlots.has(slot)?'on':''}" onclick="toggleCandidateSlot('${slot}')">${time}</button>`;
+    });
+  });
+  container.innerHTML=html;
   updateSelectedSummary();
+}
+function toggleCandidateSlot(slot){
+  STATE.selectedSlots.has(slot)?STATE.selectedSlots.delete(slot):STATE.selectedSlots.add(slot);
+  renderCandidateSlots();
 }
 function renderDateTabs(){
   document.getElementById('respondDateTabs').innerHTML=STATE.availableDates.map((d,i)=>
@@ -938,8 +963,12 @@ async function submitResponse(){
   const name=document.getElementById('respondName').value.trim();
   const email=document.getElementById('respondEmail').value.trim();
   if(!name){showToast('이름을 입력해주세요');return;}
-  if(!email){showToast('이메일을 입력해주세요');return;}
-  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){showToast('올바른 이메일 형식을 입력해주세요');return;}
+  if(STATE.currentRole==='candidate'){
+    if(!email){showToast('이메일을 입력해주세요');return;}
+    if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){showToast('올바른 이메일 형식을 입력해주세요');return;}
+  } else if(email && !/^[^@]+@[^@]+\.[^@]+$/.test(email)){
+    showToast('올바른 이메일 형식을 입력해주세요');return;
+  }
 
   let selectedSlots=[];
   let unavailableNote='';
