@@ -838,6 +838,7 @@ async function loadRespondView(){
     const rdata=await apiGet({action:'getResponses',sessionId:STATE.currentSessionId});
     hideLoading();
     const interviewers=(rdata?.responses||[]).filter(r=>r.role==='interviewer');
+    console.log('면접관 응답:', JSON.stringify(interviewers));
     if(interviewers.length===0){
       STATE.interviewerSlots=[];
     } else {
@@ -849,6 +850,7 @@ async function loadRespondView(){
       }
       STATE.interviewerSlots=Array.from(common).sort();
     }
+    console.log('교집합 슬롯:', STATE.interviewerSlots);
     document.getElementById('respondDateTabs').style.display='none';
     if(STATE.interviewerSlots.length===0){
       document.getElementById('noInterviewerSlots').style.display='block';
