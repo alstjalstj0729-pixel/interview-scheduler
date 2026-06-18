@@ -865,7 +865,12 @@ async function loadRespondView(){
     }
   } else {
     STATE.availableDates=getDateRange(session.dateStart,session.dateEnd);
+    // 첫 날짜가 주말이면 첫 평일로
     STATE.currentDateIdx=0;
+    for(let i=0;i<STATE.availableDates.length;i++){
+      const day=new Date(STATE.availableDates[i]+'T00:00:00').getDay();
+      if(day!==0&&day!==6){STATE.currentDateIdx=i;break;}
+    }
     renderDateTabs();renderTimeSlots();
   }
   showView('respond');
@@ -879,23 +884,37 @@ function getDateRange(start,end){
 function renderCandidateSlots(){
   const slots=STATE.interviewerSlots;
   const container=document.getElementById('respondTimeSlots');
-  // 날짜별로 그룹핑해서 표시
+  const days=['일','월','화','수','목','금','토'];
+
+  // 날짜별 그룹핑 + 주말 제외
   const byDate={};
   slots.forEach(slot=>{
     const date=slot.split('T')[0];
+    const d=new Date(date+'T00:00:00');
+    if(d.getDay()===0||d.getDay()===6) return; // 주말 제외
     if(!byDate[date])byDate[date]=[];
     byDate[date].push(slot);
   });
+
+  if(Object.keys(byDate).length===0){
+    container.innerHTML='<p style="font-size:13px;color:var(--ink3);text-align:center;padding:16px 0">면접관이 선택한 시간 중 평일 일정이 없습니다.</p>';
+    updateSelectedSummary();
+    return;
+  }
+
   let html='';
   Object.keys(byDate).sort().forEach(date=>{
     const d=new Date(date+'T00:00:00');
-    const days=['일','월','화','수','목','금','토'];
     const label=(d.getMonth()+1)+'/'+d.getDate()+'('+days[d.getDay()]+')';
-    html+=`<div style="width:100%;font-size:12px;font-weight:700;color:var(--ink3);margin:10px 0 6px;padding-top:8px;border-top:1px solid var(--line)">${label}</div>`;
+    html+=`
+    <div style="margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:var(--ink3);margin-bottom:8px;padding:6px 10px;background:var(--line2);border-radius:6px;display:inline-block">${label}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">`;
     byDate[date].forEach(slot=>{
       const time=slot.slice(11,16);
-      html+=`<button class="tslot ${STATE.selectedSlots.has(slot)?'on':''}" onclick="toggleCandidateSlot('${slot}')">${time}</button>`;
+      html+=`<button class="tslot ${STATE.selectedSlots.has(slot)?'on':''}" onclick="toggleCandidateSlot('${slot}')" style="width:80px">${time}</button>`;
     });
+    html+=`</div></div>`;
   });
   container.innerHTML=html;
   updateSelectedSummary();
@@ -905,11 +924,22 @@ function toggleCandidateSlot(slot){
   renderCandidateSlots();
 }
 function renderDateTabs(){
-  document.getElementById('respondDateTabs').innerHTML=STATE.availableDates.map((d,i)=>
-    `<button class="dtab ${i===STATE.currentDateIdx?'on':''}" onclick="selectDate(${i})">${formatDate(d)}</button>`
-  ).join('');
+  document.getElementById('respondDateTabs').innerHTML=STATE.availableDates.map((d,i)=>{
+    const day=new Date(d+'T00:00:00').getDay();
+    if(day===0||day===6) return ''; // 주말 숨김
+    return `<button class="dtab ${i===STATE.currentDateIdx?'on':''}" onclick="selectDate(${i})">${formatDate(d)}</button>`;
+  }).join('');
 }
-function selectDate(idx){STATE.currentDateIdx=idx;renderDateTabs();renderTimeSlots();}
+function selectDate(idx){
+  STATE.currentDateIdx=idx;
+  // 주말이면 다음 평일로
+  const day=new Date(STATE.availableDates[idx]+'T00:00:00').getDay();
+  if(day===0||day===6){
+    const next=STATE.availableDates.findIndex((d,i)=>i>idx&&new Date(d+'T00:00:00').getDay()!==0&&new Date(d+'T00:00:00').getDay()!==6);
+    if(next>-1){STATE.currentDateIdx=next;}
+  }
+  renderDateTabs();renderTimeSlots();
+}
 function renderTimeSlots(){
   const session=STATE.currentSession;
   const date=STATE.availableDates[STATE.currentDateIdx];
