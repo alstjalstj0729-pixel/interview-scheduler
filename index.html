@@ -524,8 +524,8 @@ select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
           <input class="fc" id="respondName" placeholder="이름 입력" />
         </div>
         <div class="fg" style="margin-bottom:0">
-          <label class="fl">이메일</label>
-          <input class="fc" id="respondEmail" type="email" placeholder="이메일 주소 (선택)" />
+          <label class="fl">이메일 <span class="req">*</span></label>
+          <input class="fc" id="respondEmail" type="email" placeholder="이메일 주소" />
         </div>
       </div>
     </div>
@@ -858,6 +858,8 @@ async function submitResponse(){
   const name=document.getElementById('respondName').value.trim();
   const email=document.getElementById('respondEmail').value.trim();
   if(!name){showToast('이름을 입력해주세요');return;}
+  if(!email){showToast('이메일을 입력해주세요');return;}
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){showToast('올바른 이메일 형식을 입력해주세요');return;}
   if(STATE.selectedSlots.size===0){showToast('가능한 시간을 하나 이상 선택해주세요');return;}
   showLoading('제출 중...');
   const data=await apiPost({action:'submitResponse',sessionId:STATE.currentSessionId,name,email,role:STATE.currentRole,selectedSlots:Array.from(STATE.selectedSlots).sort()});
