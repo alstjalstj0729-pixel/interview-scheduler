@@ -540,6 +540,7 @@ select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
           <div class="alert alert-warn"><i class="ti ti-alert-circle" aria-hidden="true"></i>면접관이 아직 가능한 시간을 선택하지 않았습니다. 잠시 후 다시 시도해주세요.</div>
         </div>
         <div id="slotPickerInner">
+          <div class="dtabs" id="respondDateTabs"></div>
           <div class="tslots" id="respondTimeSlots"></div>
           <div class="sel-summary" id="selectedSummary">선택된 시간: <strong>0개</strong></div>
         </div>
@@ -848,6 +849,7 @@ async function loadRespondView(){
       }
       STATE.interviewerSlots=Array.from(common).sort();
     }
+    document.getElementById('respondDateTabs').style.display='none';
     if(STATE.interviewerSlots.length===0){
       document.getElementById('noInterviewerSlots').style.display='block';
       document.getElementById('slotPickerInner').style.display='none';
