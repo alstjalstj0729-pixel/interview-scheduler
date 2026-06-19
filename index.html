@@ -3,496 +3,498 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>면접 일정 조율</title>
+<title>면접 일정 조율 | 대웅바이오</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{font-size:16px}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#F7F8FA;color:#111;min-height:100vh;line-height:1.5}
-
 :root{
-  --blue:#2563EB;--blue-light:#EFF6FF;--blue-mid:#BFDBFE;--blue-dark:#1D4ED8;
-  --green:#16A34A;--green-light:#F0FDF4;--green-mid:#BBF7D0;
-  --amber:#D97706;--amber-light:#FFFBEB;--amber-mid:#FDE68A;
-  --red:#DC2626;--red-light:#FEF2F2;
-  --ink:#111827;--ink2:#374151;--ink3:#6B7280;--ink4:#9CA3AF;
-  --line:#E5E7EB;--line2:#F3F4F6;
-  --surface:#FFFFFF;
-  --radius:14px;--radius-sm:8px;--radius-xs:6px;
+  --blue:#1A56DB;--blue-light:#EBF5FF;--blue-mid:#A4CAFE;--blue-dark:#1342A3;
+  --blue-bg:#F0F7FF;
+  --green:#057A55;--green-light:#F3FAF7;--green-mid:#84E1BC;
+  --amber:#C27803;--amber-light:#FDF6B2;--amber-mid:#FACA15;
+  --red:#E02424;--red-light:#FDF2F2;
+  --ink:#111928;--ink2:#374151;--ink3:#6B7280;--ink4:#9CA3AF;
+  --line:#E5E7EB;--line2:#F9FAFB;--surface:#FFFFFF;
+  --r:6px;--r-lg:10px;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.1);
+  --shadow-md:0 4px 6px rgba(0,0,0,.05),0 2px 4px rgba(0,0,0,.06);
 }
+body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:#F9FAFB;color:var(--ink);min-height:100vh;font-size:14px;line-height:1.6}
 
 /* ── HEADER ── */
-.hdr{
-  background:#fff;
-  border-bottom:1px solid var(--line);
-  padding:0 20px;
-  height:56px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:50;
-}
-.hdr-logo{font-size:15px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
-.hdr-logo i{color:var(--blue);font-size:20px}
-.hdr-pill{background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px}
-.hdr-nav{display:flex;gap:4px}
-.hdr-btn{background:none;border:none;color:var(--ink3);font-size:13px;font-family:inherit;padding:6px 12px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .12s,color .12s}
+.hdr{background:#fff;border-bottom:1px solid var(--line);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.hdr-logo{font-size:16px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:10px}
+.hdr-logo-mark{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.hdr-logo-mark i{font-size:18px;color:#fff}
+.hdr-logo-text{display:flex;flex-direction:column;line-height:1.2}
+.hdr-logo-text span:first-child{font-size:14px;font-weight:700;color:var(--ink)}
+.hdr-logo-text span:last-child{font-size:10px;font-weight:500;color:var(--ink3);letter-spacing:.3px}
+.hdr-nav{display:flex;align-items:center;gap:8px}
+.hdr-btn{background:none;border:none;color:var(--ink3);font-size:13px;font-family:inherit;padding:6px 10px;border-radius:var(--r);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .12s;font-weight:500}
 .hdr-btn:hover{background:var(--line2);color:var(--ink)}
 .hdr-btn.on{background:var(--blue-light);color:var(--blue);font-weight:600}
 .hdr-btn i{font-size:16px}
+.user-chip{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--line2);border-radius:var(--r);font-size:12px;font-weight:500;color:var(--ink2)}
+.role-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--blue);color:#fff;letter-spacing:.3px}
+.role-badge.admin{background:#6C2BD9}
 
-/* ── PAGE WRAPPER ── */
-.page{max-width:680px;margin:0 auto;padding:24px 16px 80px}
-.page-sm{max-width:480px;margin:0 auto;padding:24px 16px 80px}
+/* ── 탭바 ── */
+.tab-nav{background:#fff;border-bottom:1px solid var(--line)}
+.tab-nav-inner{max-width:780px;margin:0 auto;padding:0 24px;display:flex}
+.tab-nav-btn{padding:14px 20px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:500;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:6px;transition:all .15s}
+.tab-nav-btn:hover{color:var(--ink)}
+.tab-nav-btn.on{color:var(--blue);font-weight:600;border-bottom-color:var(--blue)}
+.tab-nav-btn i{font-size:15px}
 
-/* ── SECTION HEADER ── */
-.pg-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.pg-title{font-size:19px;font-weight:700;color:var(--ink)}
-.pg-sub{font-size:13px;color:var(--ink3);margin-top:2px}
+/* ── 페이지 ── */
+.page{max-width:780px;margin:0 auto;padding:32px 24px 80px}
+.page-sm{max-width:560px;margin:0 auto;padding:32px 24px 80px}
 
-/* ── CARD ── */
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
-.card-head{padding:16px 20px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between}
-.card-label{font-size:13px;font-weight:600;color:var(--ink2);display:flex;align-items:center;gap:6px}
-.card-label i{color:var(--ink3);font-size:16px}
+/* ── 페이지 헤더 ── */
+.pg-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px}
+.pg-title{font-size:20px;font-weight:700;color:var(--ink);line-height:1.3}
+.pg-sub{font-size:13px;color:var(--ink3);margin-top:3px;font-weight:400}
+
+/* ── 카드 ── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:#fff}
+.card-label{font-size:12px;font-weight:700;color:var(--ink2);display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.5px}
+.card-label i{color:var(--ink3);font-size:15px}
 .card-body{padding:20px}
 
-/* ── FORM ── */
+/* ── 폼 ── */
 .fg{margin-bottom:16px}
 .fg:last-child{margin-bottom:0}
-.fl{display:block;font-size:12px;font-weight:600;color:var(--ink3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.fl{display:block;font-size:11px;font-weight:700;color:var(--ink3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px}
 .fl .req{color:var(--red)}
-.fc{
-  width:100%;border:1.5px solid var(--line);border-radius:var(--radius-sm);
-  padding:11px 14px;font-size:15px;font-family:inherit;color:var(--ink);
-  background:#fff;outline:none;transition:border-color .15s,box-shadow .15s;
-  -webkit-appearance:none;appearance:none;
-}
-.fc:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.fc{width:100%;border:1px solid var(--line);border-radius:var(--r);padding:10px 13px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;line-height:1.5}
+.fc:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.12)}
 .fc::placeholder{color:var(--ink4)}
 select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236B7280' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+textarea.fc{resize:vertical;min-height:100px}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* ── BUTTONS ── */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  padding:12px 20px;border-radius:30px;font-size:14px;font-weight:600;
-  font-family:inherit;cursor:pointer;border:none;transition:all .15s;
-  white-space:nowrap;text-decoration:none;
-}
-.btn i{font-size:17px}
+/* ── 버튼 ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;border-radius:var(--r);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;line-height:1}
+.btn i{font-size:15px}
 .btn-primary{background:var(--blue);color:#fff}
 .btn-primary:hover{background:var(--blue-dark)}
 .btn-primary:active{transform:scale(.98)}
 .btn-success{background:var(--green);color:#fff}
-.btn-success:hover{background:#15803D}
-.btn-ghost{background:var(--line2);color:var(--ink2);border:1px solid var(--line)}
-.btn-ghost:hover{background:var(--line);color:var(--ink)}
-.btn-danger{background:var(--red-light);color:var(--red);border:1px solid #FECACA}
-.btn-sm{padding:8px 14px;font-size:13px;border-radius:20px}
-.btn-sm i{font-size:15px}
+.btn-success:hover{background:#046C4E}
+.btn-ghost{background:#fff;color:var(--ink2);border:1px solid var(--line)}
+.btn-ghost:hover{background:var(--line2)}
+.btn-danger{background:var(--red-light);color:var(--red);border:1px solid #F8B4B4}
+.btn-danger:hover{background:#FDE8E8}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-sm i{font-size:13px}
 .btn-block{width:100%}
-.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-lg{padding:13px 24px;font-size:15px;border-radius:var(--r-lg)}
+.btn-lg i{font-size:18px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* ── BACK BUTTON ── */
-.back-btn{display:inline-flex;align-items:center;gap:5px;color:var(--ink3);font-size:13px;font-weight:500;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;margin-bottom:18px}
+/* ── 뒤로가기 ── */
+.back-btn{display:inline-flex;align-items:center;gap:4px;color:var(--ink3);font-size:12px;font-weight:600;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;margin-bottom:20px;text-transform:uppercase;letter-spacing:.4px;transition:color .12s}
 .back-btn:hover{color:var(--blue)}
-.back-btn i{font-size:16px}
+.back-btn i{font-size:14px}
 
-/* ── SESSION CARD ── */
-.scard{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;
-  transition:border-color .12s,box-shadow .12s;margin-bottom:10px;
-}
-.scard:hover{border-color:var(--blue-mid);box-shadow:0 2px 12px rgba(37,99,235,.08)}
-.scard-icon{width:44px;height:44px;border-radius:12px;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.scard-icon i{font-size:22px}
+/* ── 세션 카드 ── */
+.scard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px 24px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .15s;margin-bottom:10px;box-shadow:var(--shadow)}
+.scard:hover{border-color:var(--blue-mid);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.scard-icon{width:42px;height:42px;border-radius:var(--r);background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.scard-icon i{font-size:20px}
 .scard-body{flex:1;min-width:0}
-.scard-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.scard-meta{font-size:12px;color:var(--ink3);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.scard-arrow{color:var(--ink4);flex-shrink:0}
+.scard-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scard-meta{font-size:12px;color:var(--ink3);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.scard-arrow{color:var(--ink4)}
 .scard-arrow i{font-size:18px}
 
-/* ── BADGE ── */
-.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.2px}
-.badge i{font-size:11px}
+/* ── 배지 ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.2px}
 .badge-blue{background:var(--blue-light);color:var(--blue)}
 .badge-green{background:var(--green-light);color:var(--green)}
 .badge-amber{background:var(--amber-light);color:var(--amber)}
-.badge-purple{background:#F5F3FF;color:#7C3AED}
-.badge-pink{background:#FDF2F8;color:#BE185D}
+.badge-pink{background:#FDF2F8;color:#9B1C6E}
+.badge-purple{background:#F3F0FF;color:#6C2BD9}
 
-/* ── LINK BOX ── */
-.lbox{
-  background:var(--line2);border:1px solid var(--line);border-radius:var(--radius-sm);
-  padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;
-}
+/* ── 링크 박스 ── */
+.lbox{background:var(--blue-bg);border:1px solid var(--blue-mid);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .lbox:last-child{margin-bottom:0}
-.lbox-role{font-size:11px;font-weight:700;color:var(--ink3);white-space:nowrap;min-width:52px;display:flex;align-items:center;gap:4px}
-.lbox-role i{font-size:13px}
+.lbox-role{font-size:11px;font-weight:700;color:var(--blue-dark);white-space:nowrap;min-width:50px;display:flex;align-items:center;gap:4px}
 .lbox-url{font-size:12px;color:var(--blue);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace}
-.lbox-copy{flex-shrink:0}
 
-/* ── STATS ── */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px;text-align:center}
-.stat-num{font-size:26px;font-weight:800;color:var(--blue);line-height:1;margin-bottom:4px}
-.stat-lbl{font-size:11px;color:var(--ink3);font-weight:500}
+/* ── 통계 ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;text-align:center;box-shadow:var(--shadow)}
+.stat-num{font-size:28px;font-weight:800;color:var(--blue);line-height:1;margin-bottom:6px}
+.stat-lbl{font-size:11px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
 
-/* ── ANALYSIS SLOTS ── */
-.aslot{
-  display:flex;align-items:center;gap:12px;padding:14px 16px;
-  border-radius:var(--radius-sm);border:1.5px solid var(--line);
-  background:var(--surface);cursor:pointer;transition:all .12s;margin-bottom:8px;
-}
+/* ── 분석 슬롯 ── */
+.aslot{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);cursor:pointer;transition:all .12s;margin-bottom:8px}
 .aslot:last-child{margin-bottom:0}
-.aslot:hover{border-color:var(--blue-mid);box-shadow:0 2px 8px rgba(37,99,235,.08)}
+.aslot:hover{border-color:var(--blue-mid);background:var(--blue-light)}
 .aslot.is-best{border-color:var(--amber-mid);background:var(--amber-light)}
 .aslot.is-confirmed{border-color:var(--green-mid);background:var(--green-light)}
-.aslot-time{font-size:13px;font-weight:700;color:var(--ink);min-width:130px;line-height:1.3}
-.aslot-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
-.aslot-fill{height:100%;border-radius:3px;background:var(--ink3);transition:width .3s}
+.aslot-time{font-size:13px;font-weight:700;color:var(--ink);min-width:160px;line-height:1.4}
+.aslot-bar{flex:1;height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.aslot-fill{height:100%;border-radius:2px;background:var(--blue-mid);transition:width .3s}
 .aslot.is-best .aslot-fill{background:var(--amber)}
 .aslot.is-confirmed .aslot-fill{background:var(--green)}
-.aslot-count{font-size:12px;font-weight:700;color:var(--ink2);white-space:nowrap}
-.aslot-names{font-size:11px;color:var(--ink4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.aslot-count{font-size:12px;font-weight:600;color:var(--ink2);white-space:nowrap}
 
-/* ── RESPONDENT LIST ── */
-.ritem{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--radius-sm);background:var(--line2);margin-bottom:6px}
+/* ── 응답자 ── */
+.ritem{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--r);background:var(--line2);border:1px solid var(--line);margin-bottom:6px}
 .ritem:last-child{margin-bottom:0}
 .ritem-name{font-size:13px;font-weight:600;color:var(--ink);flex:1}
 .ritem-cnt{font-size:12px;color:var(--ink3)}
-.ritem-email{font-size:11px;color:var(--ink4)}
 
-/* ── CONFIRMED BANNER ── */
-.conf-banner{
-  background:linear-gradient(135deg,#166534,#16A34A);
-  color:#fff;border-radius:var(--radius);padding:24px 20px;
-  text-align:center;margin-bottom:16px;
-}
-.conf-banner i{font-size:32px;margin-bottom:8px;display:block;opacity:.9}
-.conf-banner h3{font-size:20px;font-weight:800;margin-bottom:4px}
-.conf-banner p{font-size:13px;opacity:.85}
+/* ── 확정 배너 ── */
+.conf-banner{background:var(--blue);color:#fff;border-radius:var(--r-lg);padding:28px 24px;text-align:center;margin-bottom:20px}
+.conf-banner i{font-size:28px;margin-bottom:10px;display:block;opacity:.9}
+.conf-banner h3{font-size:18px;font-weight:700;margin-bottom:4px}
+.conf-banner p{font-size:13px;opacity:.8}
+.conf-banner.green{background:var(--green)}
 
-/* ── VIEWS ── */
+/* ── 뷰 ── */
 .view{display:none}
 .view.on{display:block}
 
-/* ── DATE TABS ── */
+/* ── 날짜 탭 ── */
 .dtabs{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:16px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .dtabs::-webkit-scrollbar{display:none}
-.dtab{
-  flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;
-  border:1.5px solid var(--line);background:var(--surface);cursor:pointer;
-  color:var(--ink3);font-family:inherit;transition:all .12s;white-space:nowrap;
-}
+.dtab{flex-shrink:0;padding:7px 14px;border-radius:var(--r);font-size:13px;font-weight:600;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--ink3);font-family:inherit;transition:all .12s;white-space:nowrap}
 .dtab:hover{border-color:var(--blue-mid);color:var(--blue)}
 .dtab.on{background:var(--blue);border-color:var(--blue);color:#fff}
 
-/* ── TIME SLOTS ── */
+/* ── 시간 슬롯 ── */
 .tslots{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
-.tslot{
-  padding:12px 8px;border-radius:var(--radius-sm);border:1.5px solid var(--line);
-  background:var(--surface);text-align:center;cursor:pointer;
-  font-size:14px;font-weight:600;color:var(--ink2);font-family:inherit;
-  transition:all .12s;user-select:none;min-height:48px;display:flex;align-items:center;justify-content:center;
-}
-.tslot:hover{border-color:var(--blue-mid);color:var(--blue)}
-.tslot.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.25)}
+.tslot{padding:10px 8px;border-radius:var(--r);border:1px solid var(--line);background:#fff;text-align:center;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink2);font-family:inherit;transition:all .12s;user-select:none;min-height:44px;display:flex;align-items:center;justify-content:center}
+.tslot:hover{border-color:var(--blue-mid);color:var(--blue);background:var(--blue-light)}
+.tslot.on{background:var(--blue);border-color:var(--blue);color:#fff}
 
-/* ── SELECTED SUMMARY ── */
-.sel-summary{
-  margin-top:14px;padding:12px 16px;background:var(--blue-light);
-  border-radius:var(--radius-sm);font-size:13px;color:var(--blue-dark);
-}
+/* ── 선택 요약 ── */
+.sel-summary{margin-top:14px;padding:12px 16px;background:var(--blue-bg);border:1px solid var(--blue-mid);border-radius:var(--r);font-size:13px;color:var(--blue-dark)}
 .sel-summary strong{font-weight:700}
 
-/* ── ALERT ── */
-.alert{padding:12px 16px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
-.alert i{font-size:16px;flex-shrink:0;margin-top:1px}
+/* ── 알림 ── */
+.alert{padding:12px 16px;border-radius:var(--r);font-size:13px;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.alert i{font-size:15px;flex-shrink:0;margin-top:1px}
 .alert-info{background:var(--blue-light);color:#1E40AF;border:1px solid var(--blue-mid)}
-.alert-success{background:var(--green-light);color:#166534;border:1px solid var(--green-mid)}
-.alert-warn{background:var(--amber-light);color:#92400E;border:1px solid var(--amber-mid)}
+.alert-success{background:var(--green-light);color:#046C4E;border:1px solid var(--green-mid)}
+.alert-warn{background:#FFFBEB;color:#92400E;border:1px solid #FACA15}
 
-/* ── EMPTY STATE ── */
-.empty{text-align:center;padding:48px 24px}
-.empty i{font-size:40px;color:var(--ink4);display:block;margin-bottom:10px}
-.empty p{font-size:14px;color:var(--ink3)}
+/* ── 빈 상태 ── */
+.empty{text-align:center;padding:56px 24px}
+.empty i{font-size:36px;color:var(--ink4);display:block;margin-bottom:12px}
+.empty p{font-size:14px;color:var(--ink3);line-height:1.6}
 
-/* ── MODAL (no fixed!) ── */
-.modal-wrap{
-  display:none;position:fixed;inset:0;z-index:200;
-  align-items:flex-end;justify-content:center;
-  background:rgba(0,0,0,.4);
-}
+/* ── 모달 ── */
+.modal-wrap{display:none;position:fixed;inset:0;z-index:200;align-items:flex-end;justify-content:center;background:rgba(17,25,40,.5)}
 .modal-wrap.on{display:flex}
-.modal{
-  background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:500px;
-  padding:24px 20px 40px;
-}
-@media(min-width:520px){
-  .modal-wrap{align-items:center}
-  .modal{border-radius:20px;margin:20px}
-}
+.modal{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:500px;padding:24px 24px 40px}
+@media(min-width:520px){.modal-wrap{align-items:center}.modal{border-radius:16px;margin:20px}}
 .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.modal-title{font-size:16px;font-weight:700}
-.modal-close{background:var(--line2);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3)}
-.modal-close i{font-size:18px}
-.modal-time{background:var(--blue-light);border-radius:var(--radius-sm);padding:16px;text-align:center;margin-bottom:16px}
-.modal-time-txt{font-size:18px;font-weight:800;color:var(--ink)}
+.modal-title{font-size:15px;font-weight:700;color:var(--ink)}
+.modal-close{background:var(--line2);border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);transition:background .12s}
+.modal-close:hover{background:var(--line)}
+.modal-close i{font-size:16px}
 .modal-foot{display:flex;gap:8px;margin-top:20px}
 .modal-foot .btn{flex:1}
 
-/* ── TOAST ── */
-.toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
-  background:#1F2937;color:#fff;padding:12px 20px;border-radius:30px;
-  font-size:14px;z-index:500;transition:transform .22s ease;
-  white-space:nowrap;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2);
-}
+/* ── 로딩/토스트 ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:500;transition:transform .2s ease;white-space:nowrap;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.25)}
 .toast.on{transform:translateX(-50%) translateY(0)}
-
-/* ── LOADING ── */
-.loading-wrap{
-  display:none;position:fixed;inset:0;background:rgba(255,255,255,.8);
-  z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:14px;
-  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-}
+.loading-wrap{display:none;position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(4px)}
 .loading-wrap.on{display:flex}
-.spin{
-  width:36px;height:36px;border:3px solid var(--blue-mid);
-  border-top-color:var(--blue);border-radius:50%;
-  animation:spin .7s linear infinite;
-}
+.spin{width:32px;height:32px;border:2.5px solid var(--blue-mid);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-txt{font-size:14px;color:var(--ink3);font-weight:500}
+.loading-txt{font-size:13px;color:var(--ink3);font-weight:500}
+.fab{display:none;position:fixed;bottom:24px;right:20px;z-index:40;background:var(--blue);color:#fff;border:none;border-radius:50%;width:52px;height:52px;cursor:pointer;box-shadow:0 4px 16px rgba(26,86,219,.4);align-items:center;justify-content:center;transition:transform .15s}
+.fab:active{transform:scale(.92)}
+.fab i{font-size:22px}
 
-/* ── FAB (mobile add button) ── */
-.fab{
-  display:none;position:fixed;bottom:24px;right:20px;z-index:40;
-  background:var(--blue);color:#fff;border:none;border-radius:50%;
-  width:56px;height:56px;font-size:28px;cursor:pointer;
-  box-shadow:0 4px 20px rgba(37,99,235,.4);align-items:center;justify-content:center;
-  transition:transform .15s,box-shadow .15s;
+/* ── 로그인 ── */
+.login-wrap{min-height:100vh;display:flex;background:#fff}
+.login-left{flex:1;background:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;color:#fff}
+.login-left-icon{width:64px;height:64px;background:rgba(255,255,255,.15);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:32px}
+.login-left-icon i{font-size:32px;color:#fff}
+.login-left h2{font-size:28px;font-weight:800;margin-bottom:12px;line-height:1.2}
+.login-left p{font-size:14px;opacity:.75;line-height:1.7;max-width:280px}
+.login-right{width:440px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 48px}
+.login-form-wrap{width:100%}
+.login-title{font-size:22px;font-weight:800;color:var(--ink);margin-bottom:6px}
+.login-subtitle{font-size:13px;color:var(--ink3);margin-bottom:32px}
+@media(max-width:700px){
+  .login-left{display:none}
+  .login-right{width:100%;padding:40px 28px}
 }
-.fab:active{transform:scale(.93)}
-.fab i{font-size:24px}
 
-/* ── DIVIDER ── */
-.div{border:none;border-top:1px solid var(--line);margin:16px 0}
+/* ── 계정 관리 ── */
+.acard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.acard-info{flex:1}
+.acard-name{font-size:14px;font-weight:700;color:var(--ink)}
+.acard-meta{font-size:12px;color:var(--ink3);margin-top:2px}
+.acard-actions{display:flex;gap:6px}
 
-/* ── SETUP GUIDE ── */
-.guide-steps{counter-reset:step}
-.guide-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
-.guide-step:last-child{margin-bottom:0}
-.step-num{
-  width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;
-  font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
-}
-.step-txt{font-size:14px;color:var(--ink2);line-height:1.5}
-.step-txt code{background:var(--line2);padding:1px 5px;border-radius:4px;font-size:12px;color:var(--ink)}
+/* ── 섹션 구분선 ── */
+.divider{border:none;border-top:1px solid var(--line);margin:20px 0}
 
-/* ── RESP. MOBILE ── */
 @media(max-width:640px){
-  .hdr{padding:0 16px}
-  .hdr-logo span.hdr-txt{display:none}
-  .page,.page-sm{padding:16px 14px 80px}
+  .hdr{padding:0 16px;height:54px}
+  .page,.page-sm{padding:20px 16px 80px}
   .stats{grid-template-columns:1fr 1fr}
   .stats .stat:last-child{display:none}
-  .aslot-names{display:none}
-  .pg-title{font-size:17px}
   .fab{display:flex}
-  .fab-hide .fab{display:none}
   .tslots{grid-template-columns:repeat(auto-fill,minmax(72px,1fr))}
+  .fr{grid-template-columns:1fr}
+  .pg-title{font-size:18px}
 }
-@media(min-width:641px){
-  .fab{display:none!important}
-}
+@media(min-width:641px){.fab{display:none!important}}
 </style>
 </head>
 <body>
 
-<header class="hdr">
-  <div class="hdr-logo">
-    <i class="ti ti-calendar-event" aria-hidden="true"></i>
-    <span class="hdr-txt">면접 일정 조율</span>
-    <span class="hdr-pill">대웅바이오</span>
-  </div>
-  <nav class="hdr-nav" id="headerNav">
-    <button class="hdr-btn on" id="navAdmin" onclick="showView('admin')"><i class="ti ti-layout-list" aria-hidden="true"></i>세션</button>
-    <button class="hdr-btn" id="navSetup" onclick="showView('setup')"><i class="ti ti-settings" aria-hidden="true"></i>설정</button>
-  </nav>
-</header>
-
+<!-- 로딩 -->
 <div class="loading-wrap" id="loadingWrap">
   <div class="spin"></div>
   <p class="loading-txt" id="loadingTxt">처리 중...</p>
 </div>
-
 <div class="toast" id="toast"></div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- VIEW: ADMIN LIST                            -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- ═══════════════════ 로그인 화면 ═══════════════════ -->
+<div id="loginPage">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div style="max-width:380px;width:100%">
+        <div style="margin-bottom:24px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+            <div style="width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center">
+              <i class="ti ti-calendar-event" style="font-size:20px;color:#fff"></i>
+            </div>
+            <span style="font-size:13px;font-weight:700;opacity:.85;letter-spacing:.5px">대웅바이오 인사팀</span>
+          </div>
+          <h2 style="font-size:28px;font-weight:800;margin-bottom:12px;line-height:1.25">면접 일정<br>조율 시스템</h2>
+          <p style="font-size:13px;opacity:.75;line-height:1.8">면접관의 가능 시간을 먼저 수집하고,<br>지원자가 그 중에서 선택하는 방식으로<br>최적의 면접 일정을 확정하세요.</p>
+        </div>
+        <svg viewBox="0 0 380 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:380px">
+          <rect x="10" y="10" width="360" height="240" rx="16" fill="rgba(255,255,255,.07)"/>
+          <rect x="30" y="28" width="190" height="170" rx="12" fill="rgba(255,255,255,.13)"/>
+          <rect x="30" y="28" width="190" height="36" rx="12" fill="rgba(255,255,255,.22)"/>
+          <rect x="30" y="52" width="190" height="12" rx="0" fill="rgba(255,255,255,.22)"/>
+          <text x="125" y="50" text-anchor="middle" fill="white" font-size="11" font-weight="700" opacity=".9">2026년 7월</text>
+          <text x="52" y="80" text-anchor="middle" fill="white" font-size="9" opacity=".55">월</text>
+          <text x="79" y="80" text-anchor="middle" fill="white" font-size="9" opacity=".55">화</text>
+          <text x="106" y="80" text-anchor="middle" fill="white" font-size="9" opacity=".55">수</text>
+          <text x="133" y="80" text-anchor="middle" fill="white" font-size="9" opacity=".55">목</text>
+          <text x="160" y="80" text-anchor="middle" fill="white" font-size="9" opacity=".55">금</text>
+          <text x="187" y="80" text-anchor="middle" fill="white" font-size="9" opacity=".4">토</text>
+          <text x="52" y="100" text-anchor="middle" fill="white" font-size="10" opacity=".75">1</text>
+          <text x="79" y="100" text-anchor="middle" fill="white" font-size="10" opacity=".75">2</text>
+          <text x="106" y="100" text-anchor="middle" fill="white" font-size="10" opacity=".75">3</text>
+          <text x="133" y="100" text-anchor="middle" fill="white" font-size="10" opacity=".75">4</text>
+          <circle cx="160" cy="97" r="11" fill="white" opacity=".95"/>
+          <text x="160" y="101" text-anchor="middle" fill="#1A56DB" font-size="10" font-weight="800">7</text>
+          <text x="52" y="122" text-anchor="middle" fill="white" font-size="10" opacity=".75">8</text>
+          <text x="79" y="122" text-anchor="middle" fill="white" font-size="10" opacity=".75">9</text>
+          <text x="106" y="122" text-anchor="middle" fill="white" font-size="10" opacity=".75">10</text>
+          <circle cx="133" cy="119" r="11" fill="rgba(255,255,255,.28)"/>
+          <text x="133" y="123" text-anchor="middle" fill="white" font-size="10" font-weight="700">11</text>
+          <text x="160" y="122" text-anchor="middle" fill="white" font-size="10" opacity=".75">12</text>
+          <text x="52" y="144" text-anchor="middle" fill="white" font-size="10" opacity=".75">15</text>
+          <text x="79" y="144" text-anchor="middle" fill="white" font-size="10" opacity=".75">16</text>
+          <text x="106" y="144" text-anchor="middle" fill="white" font-size="10" opacity=".75">17</text>
+          <text x="133" y="144" text-anchor="middle" fill="white" font-size="10" opacity=".75">18</text>
+          <circle cx="160" cy="141" r="11" fill="rgba(255,255,255,.28)"/>
+          <text x="160" y="145" text-anchor="middle" fill="white" font-size="10" font-weight="700">14</text>
+          <text x="52" y="166" text-anchor="middle" fill="white" font-size="10" opacity=".75">22</text>
+          <text x="79" y="166" text-anchor="middle" fill="white" font-size="10" opacity=".75">23</text>
+          <text x="106" y="166" text-anchor="middle" fill="white" font-size="10" opacity=".75">24</text>
+          <text x="133" y="166" text-anchor="middle" fill="white" font-size="10" opacity=".75">25</text>
+          <text x="160" y="166" text-anchor="middle" fill="white" font-size="10" opacity=".75">28</text>
+          <text x="52" y="188" text-anchor="middle" fill="white" font-size="10" opacity=".75">29</text>
+          <text x="79" y="188" text-anchor="middle" fill="white" font-size="10" opacity=".75">30</text>
+          <text x="106" y="188" text-anchor="middle" fill="white" font-size="10" opacity=".75">31</text>
+          <rect x="238" y="28" width="122" height="78" rx="10" fill="rgba(255,255,255,.16)"/>
+          <text x="250" y="46" fill="white" font-size="9" font-weight="700" opacity=".65">응답 현황</text>
+          <text x="250" y="63" fill="white" font-size="8" opacity=".65">후보자</text>
+          <rect x="250" y="67" width="96" height="5" rx="2.5" fill="rgba(255,255,255,.18)"/>
+          <rect x="250" y="67" width="70" height="5" rx="2.5" fill="white" opacity=".85"/>
+          <text x="250" y="84" fill="white" font-size="8" opacity=".65">면접관</text>
+          <rect x="250" y="88" width="96" height="5" rx="2.5" fill="rgba(255,255,255,.18)"/>
+          <rect x="250" y="88" width="85" height="5" rx="2.5" fill="white" opacity=".85"/>
+          <rect x="238" y="120" width="122" height="70" rx="10" fill="rgba(255,255,255,.16)"/>
+          <text x="250" y="138" fill="white" font-size="9" font-weight="700" opacity=".65">확정 시간</text>
+          <rect x="250" y="145" width="98" height="30" rx="6" fill="rgba(255,255,255,.22)"/>
+          <text x="299" y="159" text-anchor="middle" fill="white" font-size="9" font-weight="700">7월 7일 (월)</text>
+          <text x="299" y="172" text-anchor="middle" fill="white" font-size="11" font-weight="800">14:00</text>
+          <rect x="238" y="204" width="122" height="30" rx="8" fill="rgba(255,255,255,.22)"/>
+          <circle cx="253" cy="219" r="7" fill="rgba(255,255,255,.3)"/>
+          <path d="M249 219 L252 222 L257 215" stroke="white" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="265" y="223" fill="white" font-size="9" font-weight="600">확정 완료</text>
+          <line x1="30" y1="218" x2="218" y2="218" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+          <text x="30" y="234" fill="white" font-size="9" opacity=".55">면접관 응답 수집</text>
+          <text x="132" y="234" fill="white" font-size="9" opacity=".55">→</text>
+          <text x="145" y="234" fill="white" font-size="9" opacity=".55">지원자 선택</text>
+          <text x="228" y="234" fill="white" font-size="9" opacity=".55">→</text>
+          <text x="242" y="234" fill="white" font-size="9" font-weight="700" opacity=".9">확정</text>
+        </svg>
+      </div>
+    </div>
+    <div class="login-right">
+      <div class="login-form-wrap">
+        <div class="login-title">로그인</div>
+        <div class="login-subtitle">담당자 계정으로 로그인하세요</div>
+        <div class="fg">
+          <label class="fl">아이디</label>
+          <input class="fc" id="loginId" placeholder="아이디 입력" onkeydown="if(event.key==='Enter')doLogin()" />
+        </div>
+        <div class="fg">
+          <label class="fl">비밀번호</label>
+          <input class="fc" id="loginPw" type="password" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()" />
+        </div>
+        <div id="loginError" style="display:none" class="alert alert-warn">
+          <i class="ti ti-alert-circle"></i><span id="loginErrorMsg"></span>
+        </div>
+        <button class="btn btn-primary btn-block btn-lg" onclick="doLogin()" style="margin-top:8px">
+          <i class="ti ti-login"></i>로그인
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 앱 본체 ═══════════════════ -->
+<div id="appPage" style="display:none">
+
+<header class="hdr">
+  <div class="hdr-logo">
+    <div class="hdr-logo-mark"><i class="ti ti-calendar-event"></i></div>
+    <div class="hdr-logo-text">
+      <span>면접 일정 조율</span>
+      <span>대웅바이오 인사팀</span>
+    </div>
+  </div>
+  <div class="hdr-nav">
+    <div class="user-chip" id="userChip"></div>
+    <button class="hdr-btn" onclick="doLogout()"><i class="ti ti-logout"></i></button>
+  </div>
+</header>
+
+<!-- 탭 네비게이션 -->
+<div class="tab-nav">
+  <div class="tab-nav-inner">
+    <button class="tab-nav-btn on" id="tabSession" onclick="switchTab('session')">
+      <i class="ti ti-layout-list"></i>세션
+    </button>
+    <button class="tab-nav-btn" id="tabAccounts" onclick="switchTab('accounts')" style="display:none">
+      <i class="ti ti-users"></i>계정 관리
+    </button>
+  </div>
+</div>
+
+<!-- ═══ 세션 목록 ═══ -->
 <div class="view on" id="viewAdmin">
   <div class="page">
     <div class="pg-head">
       <div>
         <div class="pg-title">면접 세션</div>
-        <div class="pg-sub">세션을 만들고 링크를 공유하세요</div>
+        <div class="pg-sub" id="adminSubtitle"></div>
       </div>
-      <button class="btn btn-primary btn-sm desktop-add" onclick="showView('create')">
-        <i class="ti ti-plus" aria-hidden="true"></i>새 세션
+      <button class="btn btn-primary btn-sm" onclick="showView('create')">
+        <i class="ti ti-plus"></i>새 세션
       </button>
     </div>
-
-    <div class="alert alert-warn" id="apiNotice" style="display:none">
-      <i class="ti ti-alert-circle" aria-hidden="true"></i>
-      <span>Apps Script URL이 없습니다. <a href="#" onclick="showView('setup');return false" style="font-weight:700;color:inherit">설정</a>에서 먼저 입력해주세요.</span>
-    </div>
-
     <div id="sessionListArea">
-      <div class="empty"><i class="ti ti-loader" aria-hidden="true"></i><p>불러오는 중...</p></div>
+      <div class="empty"><i class="ti ti-loader"></i><p>불러오는 중...</p></div>
     </div>
   </div>
-
-  <button class="fab" onclick="showView('create')" aria-label="새 세션 만들기">
-    <i class="ti ti-plus" aria-hidden="true"></i>
-  </button>
+  <button class="fab" onclick="showView('create')"><i class="ti ti-plus"></i></button>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- VIEW: CREATE SESSION                        -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- ═══ 세션 생성 ═══ -->
 <div class="view" id="viewCreate">
   <div class="page-sm">
-    <button class="back-btn" onclick="showView('admin')"><i class="ti ti-arrow-left" aria-hidden="true"></i>목록으로</button>
-    <div class="pg-head" style="margin-bottom:16px">
-      <div class="pg-title">새 면접 세션</div>
-    </div>
-
+    <button class="back-btn" onclick="showView('admin')"><i class="ti ti-arrow-left"></i>목록으로</button>
+    <div class="pg-head" style="margin-bottom:16px"><div class="pg-title">새 면접 세션</div></div>
     <div class="card">
-      <div class="card-head"><span class="card-label"><i class="ti ti-info-circle" aria-hidden="true"></i>기본 정보</span></div>
+      <div class="card-head"><span class="card-label"><i class="ti ti-info-circle"></i>기본 정보</span></div>
       <div class="card-body">
-        <div class="fg">
-          <label class="fl">세션 제목 <span class="req">*</span></label>
-          <input class="fc" id="createTitle" placeholder="예: 2026년 하반기 채용 면접" />
-        </div>
-        <div class="fg">
-          <label class="fl">채용 포지션</label>
-          <input class="fc" id="createPosition" placeholder="예: 바이오QA팀 관리약사" />
-        </div>
-
+        <div class="fg"><label class="fl">세션 제목 <span class="req">*</span></label><input class="fc" id="createTitle" placeholder="예: 2026년 하반기 채용 면접" /></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">채용 포지션</label><input class="fc" id="createPosition" placeholder="예: 바이오QA팀 관리약사" /></div>
       </div>
     </div>
-
     <div class="card">
-      <div class="card-head"><span class="card-label"><i class="ti ti-calendar" aria-hidden="true"></i>일정 범위</span></div>
+      <div class="card-head"><span class="card-label"><i class="ti ti-calendar"></i>일정 범위</span></div>
       <div class="card-body">
         <div class="fr" style="margin-bottom:16px">
-          <div class="fg" style="margin-bottom:0">
-            <label class="fl">시작 날짜 <span class="req">*</span></label>
-            <input class="fc" id="createDateStart" type="date" />
-          </div>
-          <div class="fg" style="margin-bottom:0">
-            <label class="fl">종료 날짜 <span class="req">*</span></label>
-            <input class="fc" id="createDateEnd" type="date" />
-          </div>
+          <div class="fg" style="margin-bottom:0"><label class="fl">시작 날짜 <span class="req">*</span></label><input class="fc" id="createDateStart" type="date" /></div>
+          <div class="fg" style="margin-bottom:0"><label class="fl">종료 날짜 <span class="req">*</span></label><input class="fc" id="createDateEnd" type="date" /></div>
         </div>
         <div class="fr" style="margin-bottom:16px">
-          <div class="fg" style="margin-bottom:0">
-            <label class="fl">시작 시간 <span class="req">*</span></label>
-            <input class="fc" id="createTimeStart" type="time" value="09:00" />
-          </div>
-          <div class="fg" style="margin-bottom:0">
-            <label class="fl">종료 시간 <span class="req">*</span></label>
-            <input class="fc" id="createTimeEnd" type="time" value="18:00" />
-          </div>
+          <div class="fg" style="margin-bottom:0"><label class="fl">시작 시간 <span class="req">*</span></label><input class="fc" id="createTimeStart" type="time" value="09:00" /></div>
+          <div class="fg" style="margin-bottom:0"><label class="fl">종료 시간 <span class="req">*</span></label><input class="fc" id="createTimeEnd" type="time" value="18:00" /></div>
         </div>
-        <div class="fg" style="margin-bottom:0">
-          <label class="fl">시간 단위</label>
-          <select class="fc" id="createSlotMinutes">
-            <option value="30">30분 단위</option>
-            <option value="60" selected>1시간 단위</option>
-          </select>
+        <div class="fg" style="margin-bottom:0"><label class="fl">시간 단위</label>
+          <select class="fc" id="createSlotMinutes"><option value="30">30분</option><option value="60" selected>1시간</option></select>
         </div>
       </div>
     </div>
-
-    <button class="btn btn-primary btn-block" onclick="createSession()" style="height:52px;font-size:15px">
-      <i class="ti ti-check" aria-hidden="true"></i>세션 생성하기
-    </button>
+    <button class="btn btn-primary btn-block" onclick="createSession()" style="height:52px;font-size:15px"><i class="ti ti-check"></i>세션 생성하기</button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- VIEW: SESSION DETAIL (ADMIN)                -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- ═══ 세션 상세 ═══ -->
 <div class="view" id="viewDetail">
   <div class="page">
-    <button class="back-btn" onclick="goBackToAdmin()"><i class="ti ti-arrow-left" aria-hidden="true"></i>목록으로</button>
-
+    <button class="back-btn" onclick="goBackToAdmin()"><i class="ti ti-arrow-left"></i>목록으로</button>
     <div id="confirmedBanner" style="display:none" class="conf-banner">
-      <i class="ti ti-circle-check" aria-hidden="true"></i>
+      <i class="ti ti-circle-check"></i>
       <h3 id="confirmedBannerTime">-</h3>
       <p>면접 시간이 확정되었습니다</p>
     </div>
-
     <div class="pg-head" style="margin-bottom:16px">
-      <div>
-        <div class="pg-title" id="detailTitle">-</div>
-        <div class="pg-sub" id="detailPosition"></div>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="refreshDetail()">
-        <i class="ti ti-refresh" aria-hidden="true"></i>
-      </button>
+      <div><div class="pg-title" id="detailTitle">-</div><div class="pg-sub" id="detailPosition"></div></div>
+      <button class="btn btn-ghost btn-sm" onclick="refreshDetail()"><i class="ti ti-refresh"></i></button>
     </div>
-
     <div class="card">
-      <div class="card-head">
-        <span class="card-label"><i class="ti ti-link" aria-hidden="true"></i>참여 링크</span>
-      </div>
+      <div class="card-head"><span class="card-label"><i class="ti ti-link"></i>참여 링크</span></div>
       <div class="card-body">
-        <div class="lbox">
-          <div class="lbox-role"><i class="ti ti-user" aria-hidden="true"></i>후보자</div>
-          <div class="lbox-url" id="candidateLink">-</div>
-          <button class="btn btn-ghost btn-sm lbox-copy" onclick="copyLink('candidateLink')"><i class="ti ti-copy" aria-hidden="true"></i></button>
-        </div>
-        <div class="lbox">
-          <div class="lbox-role"><i class="ti ti-briefcase" aria-hidden="true"></i>면접관</div>
-          <div class="lbox-url" id="interviewerLink">-</div>
-          <button class="btn btn-ghost btn-sm lbox-copy" onclick="copyLink('interviewerLink')"><i class="ti ti-copy" aria-hidden="true"></i></button>
-        </div>
+        <div class="lbox"><div class="lbox-role"><i class="ti ti-user"></i>후보자</div><div class="lbox-url" id="candidateLink">-</div><button class="btn btn-ghost btn-sm" onclick="copyLink('candidateLink')"><i class="ti ti-copy"></i></button></div>
+        <div class="lbox"><div class="lbox-role"><i class="ti ti-briefcase"></i>면접관</div><div class="lbox-url" id="interviewerLink">-</div><button class="btn btn-ghost btn-sm" onclick="copyLink('interviewerLink')"><i class="ti ti-copy"></i></button></div>
       </div>
     </div>
-
     <div class="stats">
       <div class="stat"><div class="stat-num" id="statCandidate">0</div><div class="stat-lbl">후보자 응답</div></div>
       <div class="stat"><div class="stat-num" id="statInterviewer">0</div><div class="stat-lbl">면접관 응답</div></div>
       <div class="stat"><div class="stat-num" id="statBest">-</div><div class="stat-lbl">최다 가능 인원</div></div>
     </div>
-
     <div class="card">
-      <div class="card-head"><span class="card-label"><i class="ti ti-chart-bar" aria-hidden="true"></i>가능 시간 분석</span></div>
-      <div class="card-body">
-        <div id="analysisArea"><div class="empty"><i class="ti ti-clock" aria-hidden="true"></i><p>아직 응답이 없습니다</p></div></div>
-      </div>
+      <div class="card-head"><span class="card-label"><i class="ti ti-chart-bar"></i>가능 시간 분석</span></div>
+      <div class="card-body"><div id="analysisArea"><div class="empty"><i class="ti ti-clock"></i><p>아직 응답이 없습니다</p></div></div></div>
     </div>
-
     <div class="card">
-      <div class="card-head"><span class="card-label"><i class="ti ti-users" aria-hidden="true"></i>응답자 현황</span></div>
-      <div class="card-body">
-        <div id="respondentArea"><div class="empty"><i class="ti ti-user-plus" aria-hidden="true"></i><p>아직 응답이 없습니다</p></div></div>
-      </div>
+      <div class="card-head"><span class="card-label"><i class="ti ti-users"></i>응답자 현황</span></div>
+      <div class="card-body"><div id="respondentArea"><div class="empty"><i class="ti ti-user-plus"></i><p>아직 응답이 없습니다</p></div></div></div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- VIEW: RESPOND (CANDIDATE / INTERVIEWER)     -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- ═══ 계정 관리 (관리자) ═══ -->
+<div class="view" id="viewAccounts">
+  <div class="page">
+    <div class="pg-head">
+      <div><div class="pg-title">계정 관리</div><div class="pg-sub">담당자 계정을 관리합니다</div></div>
+      <button class="btn btn-primary btn-sm" onclick="openAccountModal()"><i class="ti ti-plus"></i>계정 추가</button>
+    </div>
+    <div id="accountListArea"><div class="empty"><i class="ti ti-loader"></i><p>불러오는 중...</p></div></div>
+  </div>
+</div>
+
+<!-- ═══ 후보자/면접관 응답 ═══ -->
 <div class="view" id="viewRespond">
   <div class="page-sm">
-
     <div class="card" style="margin-bottom:14px">
       <div class="card-body" style="padding:16px 20px;display:flex;align-items:center;gap:12px">
         <div style="flex:1">
@@ -502,40 +504,19 @@ select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
         <span class="badge" id="respondRoleBadge">후보자</span>
       </div>
     </div>
-
-    <div id="alreadySubmitted" style="display:none">
-      <div class="alert alert-success"><i class="ti ti-circle-check" aria-hidden="true"></i>제출 완료! 수정하려면 다시 선택 후 제출하세요.</div>
-    </div>
-
-    <div id="slotConfirmed" style="display:none" class="conf-banner">
-      <i class="ti ti-circle-check" aria-hidden="true"></i>
-      <h3 id="confirmedSlotText">-</h3>
-      <p>면접 시간이 확정되었습니다</p>
-    </div>
-
+    <div id="alreadySubmitted" style="display:none"><div class="alert alert-success"><i class="ti ti-circle-check"></i>제출 완료! 수정하려면 다시 선택 후 제출하세요.</div></div>
+    <div id="slotConfirmed" style="display:none" class="conf-banner green"><i class="ti ti-circle-check"></i><h3 id="confirmedSlotText">-</h3><p>면접 시간이 확정되었습니다</p></div>
     <div class="card" id="respondFormCard">
-      <div class="card-head"><span class="card-label"><i class="ti ti-user" aria-hidden="true"></i>기본 정보</span></div>
+      <div class="card-head"><span class="card-label"><i class="ti ti-user"></i>기본 정보</span></div>
       <div class="card-body">
-        <div class="fg">
-          <label class="fl">이름 <span class="req">*</span></label>
-          <input class="fc" id="respondName" placeholder="이름 입력" />
-        </div>
-        <div class="fg" style="margin-bottom:0">
-          <label class="fl" id="emailLabel">이메일 <span class="req" id="emailReq">*</span></label>
-          <input class="fc" id="respondEmail" type="email" placeholder="이메일 주소" />
-        </div>
+        <div class="fg"><label class="fl">이름 <span class="req">*</span></label><input class="fc" id="respondName" placeholder="이름 입력" /></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl" id="emailLabel">이메일 <span class="req" id="emailReq">*</span></label><input class="fc" id="respondEmail" type="email" placeholder="이메일 주소" /></div>
       </div>
     </div>
-
     <div class="card" id="slotPickerCard">
-      <div class="card-head">
-        <span class="card-label"><i class="ti ti-calendar-check" aria-hidden="true"></i>가능한 시간 선택</span>
-        <span style="font-size:11px;color:var(--ink3)">여러 개 선택 가능</span>
-      </div>
+      <div class="card-head"><span class="card-label"><i class="ti ti-calendar-check"></i>가능한 시간 선택</span><span style="font-size:11px;color:var(--ink3)">여러 개 선택 가능</span></div>
       <div class="card-body">
-        <div id="noInterviewerSlots" style="display:none">
-          <div class="alert alert-warn"><i class="ti ti-alert-circle" aria-hidden="true"></i>면접관이 아직 가능한 시간을 선택하지 않았습니다. 잠시 후 다시 시도해주세요.</div>
-        </div>
+        <div id="noInterviewerSlots" style="display:none"><div class="alert alert-warn"><i class="ti ti-alert-circle"></i>면접관이 아직 가능한 시간을 선택하지 않았습니다. 잠시 후 다시 시도해주세요.</div></div>
         <div id="slotPickerInner">
           <div class="dtabs" id="respondDateTabs"></div>
           <div class="tslots" id="respondTimeSlots"></div>
@@ -543,170 +524,173 @@ select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
         </div>
       </div>
     </div>
-
     <div class="card" id="unavailableCard" style="display:none">
-      <div class="card-head"><span class="card-label"><i class="ti ti-edit" aria-hidden="true"></i>가능한 일정 직접 입력</span></div>
+      <div class="card-head"><span class="card-label"><i class="ti ti-edit"></i>가능한 일정 직접 입력</span></div>
       <div class="card-body">
-        <div class="fg" style="margin-bottom:0">
-          <label class="fl">가능한 날짜/시간을 자유롭게 작성해주세요 <span class="req">*</span></label>
-          <textarea class="fc" id="unavailableText" rows="4" placeholder="예) 6/20(금) 오후 2시 이후, 6/23(월) 오전 중 가능합니다." style="resize:vertical"></textarea>
-        </div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">가능한 날짜/시간을 자유롭게 작성해주세요 <span class="req">*</span></label>
+          <textarea class="fc" id="unavailableText" rows="4" placeholder="예) 6/20(금) 오후 2시 이후, 6/23(월) 오전 중 가능합니다." style="resize:vertical"></textarea></div>
       </div>
     </div>
-
-    <div style="display:flex;gap:10px;margin-bottom:0" id="respondBtns">
-      <button class="btn btn-ghost btn-block" onclick="toggleUnavailable()" id="unavailableBtn" style="height:52px;font-size:14px">
-        <i class="ti ti-x" aria-hidden="true"></i>모두 불가
-      </button>
-      <button class="btn btn-primary btn-block" onclick="submitResponse()" id="respondSubmitBtn" style="height:52px;font-size:15px">
-        <i class="ti ti-send" aria-hidden="true"></i>제출
-      </button>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost btn-block" onclick="toggleUnavailable()" id="unavailableBtn" style="height:52px;font-size:14px"><i class="ti ti-x"></i>모두 불가</button>
+      <button class="btn btn-primary btn-block" onclick="submitResponse()" id="respondSubmitBtn" style="height:52px;font-size:15px"><i class="ti ti-send"></i>제출</button>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- VIEW: SETUP                                 -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="view" id="viewSetup">
-  <div class="page-sm">
-    <div class="pg-head">
-      <div class="pg-title">설정</div>
-    </div>
+</div><!-- /appPage -->
 
-    <div class="card">
-      <div class="card-head"><span class="card-label"><i class="ti ti-brand-google" aria-hidden="true"></i>Apps Script 연동</span></div>
-      <div class="card-body">
-        <div class="alert alert-info" style="margin-bottom:16px">
-          <i class="ti ti-info-circle" aria-hidden="true"></i>
-          Apps Script 배포 후 생성된 웹 앱 URL을 입력하세요.
-        </div>
-        <div class="fg">
-          <label class="fl">Apps Script 웹 앱 URL</label>
-          <input class="fc" id="setupApiUrl" placeholder="https://script.google.com/macros/s/.../exec" />
-        </div>
-        <div class="fg" style="margin-bottom:16px">
-          <label class="fl">이 앱의 URL</label>
-          <input class="fc" id="setupAppUrl" placeholder="https://..." />
-          <p style="font-size:11px;color:var(--ink3);margin-top:5px">후보자·면접관에게 공유할 이 HTML 파일의 URL</p>
-        </div>
-        <button class="btn btn-primary" onclick="saveSettings()"><i class="ti ti-device-floppy" aria-hidden="true"></i>저장</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><span class="card-label"><i class="ti ti-list-check" aria-hidden="true"></i>세팅 가이드</span></div>
-      <div class="card-body">
-        <div class="guide-step"><div class="step-num">1</div><div class="step-txt">Google Sheets 새 파일 생성</div></div>
-        <div class="guide-step"><div class="step-num">2</div><div class="step-txt">메뉴 → <code>확장 프로그램 → Apps Script</code></div></div>
-        <div class="guide-step"><div class="step-num">3</div><div class="step-txt">제공된 <code>apps-script.js</code> 전체 붙여넣고 저장</div></div>
-        <div class="guide-step"><div class="step-num">4</div><div class="step-txt"><code>배포 → 새 배포 → 웹 앱</code></div></div>
-        <div class="guide-step"><div class="step-num">5</div><div class="step-txt">실행 계정: <code>나</code>, 액세스: <code>모든 사용자</code></div></div>
-        <div class="guide-step"><div class="step-num">6</div><div class="step-txt">배포 후 URL을 위 칸에 입력하고 저장</div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════ -->
-<!-- MODAL: DELETE SESSION                       -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="modal-wrap" id="deleteModal">
-  <div class="modal">
-    <div class="modal-head">
-      <span class="modal-title">세션 삭제</span>
-      <button class="modal-close" onclick="closeModal('deleteModal')"><i class="ti ti-x" aria-hidden="true"></i></button>
-    </div>
-    <p style="font-size:14px;color:var(--ink3);margin-bottom:16px">아래 세션을 삭제하시겠어요? 삭제 후 복구할 수 없습니다.</p>
-    <div style="background:var(--red-light);border:1px solid #FECACA;border-radius:var(--radius-sm);padding:14px 16px;text-align:center;margin-bottom:4px">
-      <div style="font-size:15px;font-weight:700;color:var(--ink)" id="deleteModalTitle">-</div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('deleteModal')">취소</button>
-      <button class="btn btn-danger" onclick="doDeleteSession()"><i class="ti ti-trash"></i>삭제</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════ -->
-<!-- MODAL: CONFIRM SLOT                         -->
-<!-- ═══════════════════════════════════════════ -->
+<!-- 확정 모달 -->
 <div class="modal-wrap" id="confirmModal">
   <div class="modal">
-    <div class="modal-head">
-      <span class="modal-title">면접 시간 확정</span>
-      <button class="modal-close" onclick="closeModal('confirmModal')"><i class="ti ti-x" aria-hidden="true"></i></button>
-    </div>
+    <div class="modal-head"><span class="modal-title">면접 시간 확정</span><button class="modal-close" onclick="closeModal('confirmModal')"><i class="ti ti-x"></i></button></div>
     <p style="font-size:14px;color:var(--ink3);margin-bottom:16px">아래 시간으로 확정하시겠어요?</p>
-    <div class="modal-time"><div class="modal-time-txt" id="confirmModalTime">-</div></div>
-    <p style="font-size:12px;color:var(--ink4)">확정 후 후보자·면접관 화면에 결과가 표시됩니다.</p>
+    <div style="background:var(--blue-light);border-radius:var(--radius-sm);padding:16px;text-align:center;margin-bottom:12px">
+      <div style="font-size:18px;font-weight:800;color:var(--ink)" id="confirmModalTime">-</div>
+    </div>
+    <p style="font-size:12px;color:var(--ink4)">확정 후 후보자에게 자동으로 확정 메일이 발송됩니다.</p>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal('confirmModal')">취소</button>
-      <button class="btn btn-success" onclick="doConfirmSlot()"><i class="ti ti-check" aria-hidden="true"></i>확정하기</button>
+      <button class="btn btn-success" onclick="doConfirmSlot()"><i class="ti ti-check"></i>확정하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 계정 추가 모달 -->
+<div class="modal-wrap" id="accountModal">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title">계정 추가</span><button class="modal-close" onclick="closeModal('accountModal')"><i class="ti ti-x"></i></button></div>
+    <div class="fg"><label class="fl">아이디 <span class="req">*</span></label><input class="fc" id="newUserId" placeholder="영문/숫자" /></div>
+    <div class="fg"><label class="fl">비밀번호 <span class="req">*</span></label><input class="fc" id="newUserPw" placeholder="비밀번호" /></div>
+    <div class="fg"><label class="fl">이름 <span class="req">*</span></label><input class="fc" id="newUserName" placeholder="홍길동" /></div>
+    <div class="fg"><label class="fl">센터/부서</label><input class="fc" id="newUserCenter" placeholder="예: 원료센터" /></div>
+    <div class="fg" style="margin-bottom:0"><label class="fl">권한</label>
+      <select class="fc" id="newUserRole"><option value="user">일반 담당자</option><option value="admin">관리자</option></select>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('accountModal')">취소</button>
+      <button class="btn btn-primary" onclick="doCreateAccount()"><i class="ti ti-check"></i>추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- 비밀번호 초기화 모달 -->
+<div class="modal-wrap" id="resetPwModal">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title">비밀번호 초기화</span><button class="modal-close" onclick="closeModal('resetPwModal')"><i class="ti ti-x"></i></button></div>
+    <p style="font-size:14px;color:var(--ink3);margin-bottom:16px"><span id="resetTargetName"></span>님의 비밀번호를 초기화합니다.</p>
+    <div class="fg" style="margin-bottom:0"><label class="fl">새 비밀번호 <span class="req">*</span></label><input class="fc" id="newPwInput" placeholder="새 비밀번호 입력" /></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('resetPwModal')">취소</button>
+      <button class="btn btn-primary" onclick="doResetPassword()"><i class="ti ti-check"></i>초기화</button>
     </div>
   </div>
 </div>
 
 <script>
-let STATE={apiUrl:'',appUrl:'',currentSessionId:null,currentSession:null,currentRole:null,sessions:[],responses:[],selectedSlots:new Set(),currentDateIdx:0,availableDates:[],pendingConfirmSlot:null,isUnavailable:false,interviewerSlots:[],pendingDeleteId:null};
+const API_URL='https://script.google.com/macros/s/AKfycbzToI6-Zdhbxy56XtAxWMKl5VCze4dkEYlRnVLvJh_D4PAApKjWZ0bfHhf49hv7zs4yag/exec';
+const APP_URL=window.location.href.split('?')[0];
 
+let STATE={
+  user:null,
+  currentSessionId:null,currentSession:null,currentRole:null,
+  responses:[],selectedSlots:new Set(),currentDateIdx:0,
+  availableDates:[],pendingConfirmSlot:null,
+  isUnavailable:false,interviewerSlots:[],
+  resetTargetId:null,resetTargetName:null,
+  currentTab:'session'
+};
+
+// ── 초기화 ──
 window.onload=function(){
-  loadSettings();
   const p=new URLSearchParams(window.location.search);
   const sid=p.get('session'),role=p.get('role');
   if(sid&&role){
-    document.getElementById('headerNav').style.display='none';
+    // 응답 화면 (로그인 불필요)
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('appPage').style.display='block';
+    document.querySelector('.hdr').style.display='none';
+    document.querySelectorAll('[style*="border-bottom"]')[0] && (document.querySelectorAll('[style*="border-bottom"]')[0].style.display='none');
     STATE.currentSessionId=sid;STATE.currentRole=role;
     loadRespondView();
-  }else{checkApiSetup();loadSessions();}
+  } else {
+    // 로그인 화면
+    document.getElementById('loginPage').style.display='flex';
+    document.getElementById('appPage').style.display='none';
+  }
 };
 
-const DEFAULT_API_URL='https://script.google.com/macros/s/AKfycbzToI6-Zdhbxy56XtAxWMKl5VCze4dkEYlRnVLvJh_D4PAApKjWZ0bfHhf49hv7zs4yag/exec';
+// ── 로그인 ──
+async function doLogin(){
+  const userId=document.getElementById('loginId').value.trim();
+  const pw=document.getElementById('loginPw').value.trim();
+  if(!userId||!pw){showLoginError('아이디와 비밀번호를 입력해주세요');return;}
+  showLoading('로그인 중...');
+  const data=await apiGet({action:'login',userId,password:pw});
+  hideLoading();
+  if(data&&data.success){
+    STATE.user=data.user;
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('appPage').style.display='block';
+    // 사용자 칩
+    const chip=document.getElementById('userChip');
+    chip.innerHTML=`<span class="role-badge ${data.user.role==='admin'?'admin':''}">${data.user.role==='admin'?'관리자':'담당자'}</span>${data.user.name} ${data.user.center?'· '+data.user.center:''}`;
+    // 관리자 탭
+    if(data.user.role==='admin'){
+      document.getElementById('tabAccounts').style.display='flex';
+    }
+    document.getElementById('adminSubtitle').textContent=data.user.role==='admin'?'전체 세션':'내 세션';
+    showView('admin');
+    loadSessions();
+  } else {
+    showLoginError(data?.error||'로그인 실패');
+  }
+}
 
-function loadSettings(){
-  STATE.apiUrl=localStorage.getItem('dw_api_url')||DEFAULT_API_URL;
-  STATE.appUrl=localStorage.getItem('dw_app_url')||window.location.href.split('?')[0];
-  document.getElementById('setupApiUrl').value=STATE.apiUrl;
-  document.getElementById('setupAppUrl').value=STATE.appUrl;
-}
-function saveSettings(){
-  STATE.apiUrl=document.getElementById('setupApiUrl').value.trim();
-  STATE.appUrl=document.getElementById('setupAppUrl').value.trim();
-  localStorage.setItem('dw_api_url',STATE.apiUrl);
-  localStorage.setItem('dw_app_url',STATE.appUrl);
-  showToast('설정이 저장되었습니다');checkApiSetup();showView('admin');loadSessions();
-}
-function checkApiSetup(){
-  document.getElementById('apiNotice').style.display=STATE.apiUrl?'none':'flex';
+function showLoginError(msg){
+  document.getElementById('loginError').style.display='flex';
+  document.getElementById('loginErrorMsg').textContent=msg;
 }
 
+function doLogout(){
+  STATE.user=null;
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('appPage').style.display='none';
+  document.getElementById('loginId').value='';
+  document.getElementById('loginPw').value='';
+  document.getElementById('loginError').style.display='none';
+}
+
+// ── 탭 전환 ──
+function switchTab(tab){
+  STATE.currentTab=tab;
+  document.querySelectorAll('[id^="tab"]').forEach(b=>b.classList.remove('on'));
+  const activeTab=document.getElementById('tab'+cap(tab));
+  if(activeTab)activeTab.classList.add('on');
+  if(tab==='session'){showView('admin');loadSessions();}
+  else if(tab==='accounts'){showView('accounts');loadAccounts();}
+}
+
+// ── API ──
+async function apiGet(params){
+  const url=API_URL+'?'+new URLSearchParams(params).toString();
+  const res=await fetch(url);return await res.json();
+}
+
+// ── 화면 전환 ──
 function showView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
   document.getElementById('view'+cap(name)).classList.add('on');
-  document.querySelectorAll('.hdr-btn').forEach(b=>b.classList.remove('on'));
-  const nb=document.getElementById('nav'+cap(name));if(nb)nb.classList.add('on');
   window.scrollTo(0,0);
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 function goBackToAdmin(){showView('admin');loadSessions();}
 
-async function apiGet(params){
-  if(!STATE.apiUrl){showToast('API URL을 먼저 설정해주세요');return null;}
-  const url=STATE.apiUrl+'?'+new URLSearchParams(params).toString();
-  const res=await fetch(url);return await res.json();
-}
-async function apiPost(body){
-  // POST 대신 GET으로 전송 (CORS 우회)
-  if(!STATE.apiUrl){showToast('API URL을 먼저 설정해주세요');return null;}
-  const params={action:body.action, body:JSON.stringify(body)};
-  const url=STATE.apiUrl+'?'+new URLSearchParams(params).toString();
-  const res=await fetch(url);return await res.json();
-}
-
+// ── 세션 목록 ──
 async function loadSessions(){
-  if(!STATE.apiUrl){renderSessionList([]);return;}
-  const data=await apiGet({action:'getAllSessions'});
-  if(data&&data.success){STATE.sessions=data.sessions||[];renderSessionList(STATE.sessions);}
+  if(!STATE.user)return;
+  const data=await apiGet({action:'getAllSessions',userId:STATE.user.userId,role:STATE.user.role});
+  if(data&&data.success){renderSessionList(data.sessions||[]);}
   else renderSessionList([]);
 }
 
@@ -718,27 +702,25 @@ function renderSessionList(sessions){
   area.innerHTML=sessions.map(s=>{
     const confirmed=s.status==='confirmed';
     return`<div class="scard" onclick="openSession('${s.sessionId}')">
-      <div class="scard-icon"><i class="ti ti-calendar-event" aria-hidden="true"></i></div>
+      <div class="scard-icon"><i class="ti ti-calendar-event"></i></div>
       <div class="scard-body">
         <div class="scard-title">${esc(s.title)}</div>
         <div class="scard-meta">
           <span>${esc(s.position)||'포지션 미지정'}</span>
           <span>${s.dateStart} ~ ${s.dateEnd}</span>
+          ${STATE.user&&STATE.user.role==='admin'&&s.createdBy?`<span>· ${esc(s.createdBy)}</span>`:''}
           ${confirmed?'<span class="badge badge-green"><i class="ti ti-check"></i>확정완료</span>':'<span class="badge badge-blue">진행중</span>'}
         </div>
       </div>
-      <button class="btn btn-sm" onclick="event.stopPropagation();confirmDelete('${s.sessionId}','${esc(s.title)}')" style="flex-shrink:0;background:none;border:none;color:var(--ink4);padding:8px;border-radius:8px;transition:color .12s,background .12s" onmouseover="this.style.color='var(--red)';this.style.background='var(--red-light)'" onmouseout="this.style.color='var(--ink4)';this.style.background='none'">
-        <i class="ti ti-trash" style="font-size:18px"></i>
-      </button>
-      <div class="scard-arrow"><i class="ti ti-chevron-right" aria-hidden="true"></i></div>
+      <div class="scard-arrow"><i class="ti ti-chevron-right"></i></div>
     </div>`;
   }).join('');
 }
 
+// ── 세션 생성 ──
 async function createSession(){
   const title=document.getElementById('createTitle').value.trim();
   const position=document.getElementById('createPosition').value.trim();
-  const password='';
   const dateStart=document.getElementById('createDateStart').value;
   const dateEnd=document.getElementById('createDateEnd').value;
   const timeStart=document.getElementById('createTimeStart').value;
@@ -747,16 +729,16 @@ async function createSession(){
   if(!title||!dateStart||!dateEnd||!timeStart||!timeEnd){showToast('필수 항목을 모두 입력해주세요');return;}
   if(dateStart>dateEnd){showToast('시작 날짜가 종료 날짜보다 늦을 수 없습니다');return;}
   showLoading('세션 생성 중...');
-  const data=await apiPost({action:'createSession',title,position,dateRange:{start:dateStart,end:dateEnd},timeRange:{start:timeStart,end:timeEnd},slotMinutes,adminPassword:password});
+  const data=await apiGet({action:'createSession',body:JSON.stringify({title,position,dateRange:{start:dateStart,end:dateEnd},timeRange:{start:timeStart,end:timeEnd},slotMinutes,createdBy:STATE.user?.userId||''})});
   hideLoading();
   if(data&&data.success){showToast('세션이 생성되었습니다');openSession(data.sessionId);}
   else showToast('세션 생성 실패: '+(data?.error||'오류'));
 }
 
+// ── 세션 상세 ──
 async function openSession(sessionId){
   STATE.currentSessionId=sessionId;showView('detail');await refreshDetail();
 }
-
 async function refreshDetail(){
   showLoading('응답 불러오는 중...');
   const[sd,rd]=await Promise.all([
@@ -771,9 +753,8 @@ async function refreshDetail(){
   const cb=document.getElementById('confirmedBanner');
   if(session.confirmedSlot){cb.style.display='block';document.getElementById('confirmedBannerTime').textContent=formatSlot(session.confirmedSlot);}
   else cb.style.display='none';
-  const baseUrl=STATE.appUrl||window.location.href.split('?')[0];
-  document.getElementById('candidateLink').textContent=`${baseUrl}?session=${STATE.currentSessionId}&role=candidate`;
-  document.getElementById('interviewerLink').textContent=`${baseUrl}?session=${STATE.currentSessionId}&role=interviewer`;
+  document.getElementById('candidateLink').textContent=`${APP_URL}?session=${STATE.currentSessionId}&role=candidate`;
+  document.getElementById('interviewerLink').textContent=`${APP_URL}?session=${STATE.currentSessionId}&role=interviewer`;
   const cands=STATE.responses.filter(r=>r.role==='candidate');
   const ints=STATE.responses.filter(r=>r.role==='interviewer');
   document.getElementById('statCandidate').textContent=cands.length;
@@ -785,12 +766,13 @@ function renderAnalysis(session,responses){
   const area=document.getElementById('analysisArea');
   if(responses.length===0){area.innerHTML=`<div class="empty"><i class="ti ti-clock"></i><p>아직 응답이 없습니다</p></div>`;document.getElementById('statBest').textContent='-';return;}
   const slotMap={},slotNames={};
-  responses.forEach(r=>(r.selectedSlots||[]).forEach(slot=>{
+  responses.forEach(r=>(r.selectedSlots||[]).filter(s=>s!=='UNAVAILABLE').forEach(slot=>{
     if(!slotMap[slot]){slotMap[slot]=0;slotNames[slot]=[];}
     slotMap[slot]++;slotNames[slot].push(`${r.name}(${r.role==='candidate'?'후보':'면접관'})`);
   }));
   const sorted=Object.entries(slotMap).sort((a,b)=>b[1]-a[1]);
   document.getElementById('statBest').textContent=sorted.length>0?sorted[0][1]+'명':'-';
+  if(sorted.length===0){area.innerHTML=`<div class="empty"><i class="ti ti-clock"></i><p>선택된 시간이 없습니다</p></div>`;return;}
   area.innerHTML=sorted.map(([slot,count],idx)=>{
     const isConfirmed=session.confirmedSlot===slot;
     const isBest=idx===0&&!isConfirmed;
@@ -798,7 +780,6 @@ function renderAnalysis(session,responses){
     return`<div class="aslot ${isConfirmed?'is-confirmed':isBest?'is-best':''}" onclick="openConfirmModal('${slot}')">
       <div class="aslot-time">${formatSlot(slot)}</div>
       <div class="aslot-bar"><div class="aslot-fill" style="width:${pct}%"></div></div>
-      <div class="aslot-names">${slotNames[slot].join(', ')}</div>
       <div class="aslot-count">${count}명 ${isConfirmed?'✓':isBest?'★':''}</div>
     </div>`;
   }).join('');
@@ -812,9 +793,8 @@ function renderRespondents(responses){
     const cnt=isUnavail?'<span style="color:var(--red);font-size:12px;font-weight:600">모두 불가</span>':`<span class="ritem-cnt">${(r.selectedSlots||[]).length}개 선택</span>`;
     return`<div class="ritem">
       <span class="badge ${r.role==='candidate'?'badge-blue':'badge-pink'}">${r.role==='candidate'?'후보자':'면접관'}</span>
-      <span class="ritem-name">${esc(r.name)}</span>
-      ${cnt}
-      ${r.email?`<span class="ritem-email">${esc(r.email)}</span>`:''}
+      <span class="ritem-name">${esc(r.name)}</span>${cnt}
+      ${r.email?`<span style="font-size:11px;color:var(--ink4)">${esc(r.email)}</span>`:''}
     </div>`;
   }).join('');
 }
@@ -826,26 +806,90 @@ function openConfirmModal(slot){
 }
 async function doConfirmSlot(){
   closeModal('confirmModal');showLoading('확정 처리 중...');
-  const data=await apiPost({action:'confirmSlot',sessionId:STATE.currentSessionId,confirmedSlot:STATE.pendingConfirmSlot});
+  const data=await apiGet({action:'confirmSlot',body:JSON.stringify({sessionId:STATE.currentSessionId,confirmedSlot:STATE.pendingConfirmSlot})});
   hideLoading();
   if(data&&data.success){showToast('면접 시간이 확정되었습니다 ✓');refreshDetail();}
   else showToast('확정 실패: '+(data?.error||'오류'));
 }
-function confirmDelete(sessionId, title){
-  STATE.pendingDeleteId=sessionId;
-  document.getElementById('deleteModalTitle').textContent=title;
-  document.getElementById('deleteModal').classList.add('on');
-}
-async function doDeleteSession(){
-  closeModal('deleteModal');
-  showLoading('삭제 중...');
-  const data=await apiGet({action:'deleteSession',sessionId:STATE.pendingDeleteId});
-  hideLoading();
-  if(data&&data.success){showToast('세션이 삭제되었습니다');loadSessions();}
-  else showToast('삭제 실패: '+(data?.error||'오류'));
-}
 function closeModal(id){document.getElementById(id).classList.remove('on');}
 
+// ── 계정 관리 ──
+async function loadAccounts(){
+  if(!STATE.user||STATE.user.role!=='admin')return;
+  showLoading('계정 불러오는 중...');
+  const data=await apiGet({action:'getAccounts',userId:STATE.user.userId,role:STATE.user.role});
+  hideLoading();
+  if(data&&data.success){renderAccountList(data.accounts||[]);}
+}
+
+function renderAccountList(accounts){
+  const area=document.getElementById('accountListArea');
+  if(!accounts||accounts.length===0){
+    area.innerHTML=`<div class="empty"><i class="ti ti-users"></i><p>등록된 계정이 없습니다</p></div>`;return;
+  }
+  area.innerHTML=accounts.map(a=>`
+    <div class="acard">
+      <div class="acard-info">
+        <div class="acard-name">${esc(a.name)} <span class="badge ${a.role==='admin'?'badge-purple':'badge-blue'}">${a.role==='admin'?'관리자':'담당자'}</span></div>
+        <div class="acard-meta">ID: ${esc(a.userId)} ${a.center?'· '+esc(a.center):''}</div>
+      </div>
+      <div class="acard-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openResetPw('${esc(a.userId)}','${esc(a.name)}')"><i class="ti ti-key"></i></button>
+        ${a.userId!==STATE.user.userId?`<button class="btn btn-danger btn-sm" onclick="doDeleteAccount('${esc(a.userId)}')"><i class="ti ti-trash"></i></button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function openAccountModal(){
+  document.getElementById('newUserId').value='';
+  document.getElementById('newUserPw').value='';
+  document.getElementById('newUserName').value='';
+  document.getElementById('newUserCenter').value='';
+  document.getElementById('newUserRole').value='user';
+  document.getElementById('accountModal').classList.add('on');
+}
+
+async function doCreateAccount(){
+  const newUserId=document.getElementById('newUserId').value.trim();
+  const newPassword=document.getElementById('newUserPw').value.trim();
+  const newName=document.getElementById('newUserName').value.trim();
+  const newCenter=document.getElementById('newUserCenter').value.trim();
+  const newRole=document.getElementById('newUserRole').value;
+  if(!newUserId||!newPassword||!newName){showToast('필수 항목을 입력해주세요');return;}
+  showLoading('계정 생성 중...');
+  const data=await apiGet({action:'createAccount',body:JSON.stringify({userId:STATE.user.userId,role:STATE.user.role,newUserId,newPassword,newName,newCenter,newRole})});
+  hideLoading();
+  if(data&&data.success){closeModal('accountModal');showToast('계정이 생성되었습니다');loadAccounts();}
+  else showToast('생성 실패: '+(data?.error||'오류'));
+}
+
+async function doDeleteAccount(targetId){
+  if(!confirm(`${targetId} 계정을 삭제하시겠습니까?`))return;
+  showLoading('삭제 중...');
+  const data=await apiGet({action:'deleteAccount',targetId,userId:STATE.user.userId,role:STATE.user.role});
+  hideLoading();
+  if(data&&data.success){showToast('계정이 삭제되었습니다');loadAccounts();}
+  else showToast('삭제 실패: '+(data?.error||'오류'));
+}
+
+function openResetPw(userId,name){
+  STATE.resetTargetId=userId;STATE.resetTargetName=name;
+  document.getElementById('resetTargetName').textContent=name;
+  document.getElementById('newPwInput').value='';
+  document.getElementById('resetPwModal').classList.add('on');
+}
+
+async function doResetPassword(){
+  const newPassword=document.getElementById('newPwInput').value.trim();
+  if(!newPassword){showToast('새 비밀번호를 입력해주세요');return;}
+  showLoading('처리 중...');
+  const data=await apiGet({action:'resetPassword',body:JSON.stringify({userId:STATE.user.userId,role:STATE.user.role,targetId:STATE.resetTargetId,newPassword})});
+  hideLoading();
+  if(data&&data.success){closeModal('resetPwModal');showToast('비밀번호가 초기화되었습니다');}
+  else showToast('실패: '+(data?.error||'오류'));
+}
+
+// ── 응답 화면 ──
 async function loadRespondView(){
   showLoading('일정 불러오는 중...');
   const data=await apiGet({action:'getSession',sessionId:STATE.currentSessionId});
@@ -855,40 +899,37 @@ async function loadRespondView(){
   const role=STATE.currentRole;
   document.getElementById('respondRoleBadge').textContent=role==='candidate'?'후보자':'면접관';
   document.getElementById('respondRoleBadge').className='badge '+(role==='candidate'?'badge-blue':'badge-pink');
-  // 면접관은 이메일 선택
+  document.getElementById('respondSessionTitle').textContent=session.title;
+  document.getElementById('respondSessionPosition').textContent=session.position||'';
   if(role==='interviewer'){
     document.getElementById('emailReq').style.display='none';
     document.getElementById('respondEmail').placeholder='이메일 주소 (선택)';
   }
-  document.getElementById('respondSessionTitle').textContent=session.title;
-  document.getElementById('respondSessionPosition').textContent=session.position||'';
   if(session.confirmedSlot){
     document.getElementById('slotConfirmed').style.display='block';
     document.getElementById('confirmedSlotText').textContent=formatSlot(session.confirmedSlot);
     document.getElementById('respondFormCard').style.display='none';
     document.getElementById('slotPickerCard').style.display='none';
+    document.getElementById('unavailableCard').style.display='none';
     document.getElementById('respondSubmitBtn').style.display='none';
+    document.getElementById('unavailableBtn').style.display='none';
     showView('respond');return;
   }
   if(role==='candidate'){
-    // 면접관 응답 가져와서 전원 교집합 계산
     showLoading('면접관 가능 시간 확인 중...');
     const rdata=await apiGet({action:'getResponses',sessionId:STATE.currentSessionId});
     hideLoading();
     const interviewers=(rdata?.responses||[]).filter(r=>r.role==='interviewer');
-    console.log('면접관 응답:', JSON.stringify(interviewers));
     if(interviewers.length===0){
       STATE.interviewerSlots=[];
     } else {
-      // 전원 교집합
       let common=new Set(interviewers[0].selectedSlots||[]);
       for(let i=1;i<interviewers.length;i++){
         const s=new Set(interviewers[i].selectedSlots||[]);
         common=new Set([...common].filter(x=>s.has(x)));
       }
-      STATE.interviewerSlots=Array.from(common).sort();
+      STATE.interviewerSlots=Array.from(common).filter(s=>s!=='UNAVAILABLE').sort();
     }
-    console.log('교집합 슬롯:', STATE.interviewerSlots);
     document.getElementById('respondDateTabs').style.display='none';
     if(STATE.interviewerSlots.length===0){
       document.getElementById('noInterviewerSlots').style.display='block';
@@ -898,7 +939,6 @@ async function loadRespondView(){
     }
   } else {
     STATE.availableDates=getDateRange(session.dateStart,session.dateEnd);
-    // 첫 날짜가 주말이면 첫 평일로
     STATE.currentDateIdx=0;
     for(let i=0;i<STATE.availableDates.length;i++){
       const day=new Date(STATE.availableDates[i]+'T00:00:00').getDay();
@@ -909,70 +949,60 @@ async function loadRespondView(){
   showView('respond');
 }
 
-function getDateRange(start,end){
-  const dates=[];let cur=new Date(start+'T00:00:00');const ed=new Date(end+'T00:00:00');
-  while(cur<=ed){dates.push(cur.toISOString().slice(0,10));cur.setDate(cur.getDate()+1);}
-  return dates;
-}
 function renderCandidateSlots(){
   const slots=STATE.interviewerSlots;
   const container=document.getElementById('respondTimeSlots');
   const days=['일','월','화','수','목','금','토'];
-
-  // 날짜별 그룹핑 + 주말 제외
   const byDate={};
   slots.forEach(slot=>{
     const date=slot.split('T')[0];
     const d=new Date(date+'T00:00:00');
-    if(d.getDay()===0||d.getDay()===6) return; // 주말 제외
+    if(d.getDay()===0||d.getDay()===6)return;
     if(!byDate[date])byDate[date]=[];
     byDate[date].push(slot);
   });
-
   if(Object.keys(byDate).length===0){
-    container.innerHTML='<p style="font-size:13px;color:var(--ink3);text-align:center;padding:16px 0">면접관이 선택한 시간 중 평일 일정이 없습니다.</p>';
-    updateSelectedSummary();
-    return;
+    container.innerHTML='<p style="font-size:13px;color:var(--ink3);text-align:center;padding:16px 0">면접관이 선택한 평일 일정이 없습니다.</p>';
+    updateSelectedSummary();return;
   }
-
   let html='';
   Object.keys(byDate).sort().forEach(date=>{
     const d=new Date(date+'T00:00:00');
     const label=(d.getMonth()+1)+'/'+d.getDate()+'('+days[d.getDay()]+')';
-    html+=`
-    <div style="margin-bottom:14px">
-      <div style="font-size:12px;font-weight:700;color:var(--ink3);margin-bottom:8px;padding:6px 10px;background:var(--line2);border-radius:6px;display:inline-block">${label}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">`;
+    html+=`<div style="margin-bottom:14px"><div style="font-size:12px;font-weight:700;color:var(--ink3);margin-bottom:8px;padding:6px 10px;background:var(--line2);border-radius:6px;display:inline-block">${label}</div><div style="display:flex;flex-wrap:wrap;gap:8px">`;
     byDate[date].forEach(slot=>{
-      const time=slot.slice(11,16);
-      html+=`<button class="tslot ${STATE.selectedSlots.has(slot)?'on':''}" onclick="toggleCandidateSlot('${slot}')" style="width:80px">${time}</button>`;
+      html+=`<button class="tslot ${STATE.selectedSlots.has(slot)?'on':''}" onclick="toggleCandidateSlot('${slot}')" style="width:80px">${slot.slice(11,16)}</button>`;
     });
     html+=`</div></div>`;
   });
   container.innerHTML=html;
   updateSelectedSummary();
 }
+
 function toggleCandidateSlot(slot){
   STATE.selectedSlots.has(slot)?STATE.selectedSlots.delete(slot):STATE.selectedSlots.add(slot);
   renderCandidateSlots();
 }
+
+function getDateRange(start,end){
+  const dates=[];let cur=new Date(start+'T00:00:00');const ed=new Date(end+'T00:00:00');
+  while(cur<=ed){dates.push(cur.toISOString().slice(0,10));cur.setDate(cur.getDate()+1);}
+  return dates;
+}
+
 function renderDateTabs(){
   document.getElementById('respondDateTabs').innerHTML=STATE.availableDates.map((d,i)=>{
     const day=new Date(d+'T00:00:00').getDay();
-    if(day===0||day===6) return ''; // 주말 숨김
-    return `<button class="dtab ${i===STATE.currentDateIdx?'on':''}" onclick="selectDate(${i})">${formatDate(d)}</button>`;
+    if(day===0||day===6)return'';
+    return`<button class="dtab ${i===STATE.currentDateIdx?'on':''}" onclick="selectDate(${i})">${formatDate(d)}</button>`;
   }).join('');
 }
+
 function selectDate(idx){
   STATE.currentDateIdx=idx;
-  // 주말이면 다음 평일로
-  const day=new Date(STATE.availableDates[idx]+'T00:00:00').getDay();
-  if(day===0||day===6){
-    const next=STATE.availableDates.findIndex((d,i)=>i>idx&&new Date(d+'T00:00:00').getDay()!==0&&new Date(d+'T00:00:00').getDay()!==6);
-    if(next>-1){STATE.currentDateIdx=next;}
-  }
   renderDateTabs();renderTimeSlots();
 }
+
 function renderTimeSlots(){
   const session=STATE.currentSession;
   const date=STATE.availableDates[STATE.currentDateIdx];
@@ -982,6 +1012,7 @@ function renderTimeSlots(){
   ).join('');
   updateSelectedSummary();
 }
+
 function generateSlots(date,timeStart,timeEnd,slotMinutes){
   const slots=[];
   const[sh,sm]=timeStart.split(':').map(Number);
@@ -994,34 +1025,35 @@ function generateSlots(date,timeStart,timeEnd,slotMinutes){
   }
   return slots;
 }
+
+function toggleSlot(slot){
+  STATE.selectedSlots.has(slot)?STATE.selectedSlots.delete(slot):STATE.selectedSlots.add(slot);
+  renderTimeSlots();
+}
+
+function updateSelectedSummary(){
+  const count=STATE.selectedSlots.size;
+  document.getElementById('selectedSummary').innerHTML=`선택된 시간: <strong>${count}개</strong>${count>0?' — '+Array.from(STATE.selectedSlots).sort().map(s=>formatSlot(s)).join(', '):''}`;
+}
+
 function toggleUnavailable(){
   STATE.isUnavailable=!STATE.isUnavailable;
   const btn=document.getElementById('unavailableBtn');
   const unavailCard=document.getElementById('unavailableCard');
   const slotCard=document.getElementById('slotPickerCard');
-  const submitBtn=document.getElementById('respondSubmitBtn');
   if(STATE.isUnavailable){
     btn.innerHTML='<i class="ti ti-arrow-left"></i> 돌아가기';
     btn.classList.remove('btn-ghost');btn.classList.add('btn-danger');
-    unavailCard.style.display='block';
-    slotCard.style.display='none';
+    unavailCard.style.display='block';slotCard.style.display='none';
     STATE.selectedSlots.clear();
   } else {
     btn.innerHTML='<i class="ti ti-x"></i> 모두 불가';
     btn.classList.add('btn-ghost');btn.classList.remove('btn-danger');
-    unavailCard.style.display='none';
-    slotCard.style.display='block';
+    unavailCard.style.display='none';slotCard.style.display='block';
     document.getElementById('unavailableText').value='';
   }
 }
-function toggleSlot(slot){
-  STATE.selectedSlots.has(slot)?STATE.selectedSlots.delete(slot):STATE.selectedSlots.add(slot);
-  renderTimeSlots();
-}
-function updateSelectedSummary(){
-  const count=STATE.selectedSlots.size;
-  document.getElementById('selectedSummary').innerHTML=`선택된 시간: <strong>${count}개</strong>${count>0?' — '+Array.from(STATE.selectedSlots).sort().map(s=>formatSlot(s)).join(', '):''}`;
-}
+
 async function submitResponse(){
   const name=document.getElementById('respondName').value.trim();
   const email=document.getElementById('respondEmail').value.trim();
@@ -1029,28 +1061,20 @@ async function submitResponse(){
   if(STATE.currentRole==='candidate'){
     if(!email){showToast('이메일을 입력해주세요');return;}
     if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){showToast('올바른 이메일 형식을 입력해주세요');return;}
-  } else if(email && !/^[^@]+@[^@]+\.[^@]+$/.test(email)){
+  } else if(email&&!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
     showToast('올바른 이메일 형식을 입력해주세요');return;
   }
-
-  let selectedSlots=[];
-  let unavailableNote='';
-
+  let selectedSlots=[];let unavailableNote='';
   if(STATE.isUnavailable){
     unavailableNote=document.getElementById('unavailableText').value.trim();
     if(!unavailableNote){showToast('가능한 일정을 입력해주세요');return;}
     selectedSlots=['UNAVAILABLE'];
   } else {
-    if(STATE.currentRole==='candidate'&&STATE.interviewerSlots.length>0){
-      if(STATE.selectedSlots.size===0){showToast('가능한 시간을 하나 이상 선택해주세요');return;}
-    } else if(STATE.selectedSlots.size===0){
-      showToast('가능한 시간을 하나 이상 선택해주세요');return;
-    }
+    if(STATE.selectedSlots.size===0){showToast('가능한 시간을 하나 이상 선택해주세요');return;}
     selectedSlots=Array.from(STATE.selectedSlots).sort();
   }
-
   showLoading('제출 중...');
-  const data=await apiPost({action:'submitResponse',sessionId:STATE.currentSessionId,name,email,role:STATE.currentRole,selectedSlots,unavailableNote});
+  const data=await apiGet({action:'submitResponse',body:JSON.stringify({sessionId:STATE.currentSessionId,name,email,role:STATE.currentRole,selectedSlots,unavailableNote})});
   hideLoading();
   if(data&&data.success){document.getElementById('alreadySubmitted').style.display='block';showToast('제출 완료! 담당자가 확인 후 확정합니다');window.scrollTo(0,0);}
   else showToast('제출 실패: '+(data?.error||'오류'));
@@ -1066,7 +1090,7 @@ function formatSlot(slot){
 function formatDate(dateStr){
   const d=new Date(dateStr+'T00:00:00');
   const days=['일','월','화','수','목','금','토'];
-  return`${d.getMonth()+1}/${d.getDate()} (${days[d.getDay()]})`;
+  return`${d.getMonth()+1}/${d.getDate()}(${days[d.getDay()]})`;
 }
 function esc(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function copyLink(elementId){
