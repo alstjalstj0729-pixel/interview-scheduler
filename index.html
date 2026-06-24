@@ -632,7 +632,7 @@ textarea.fc{resize:vertical;min-height:100px}
 </div>
 
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbwXmtBv7L_pv1GvA3ryO9ktx0m_O4kweOC3oEr5juXhgJ20BKbtXpGUjp6loVZ8FVmX/exec';
+const API_URL='https://script.google.com/macros/s/AKfycbzSiJf_YAqBpAd-KntE_vHSKIw7OetEVPWiLqn25vHbHlHFywgPqGCBt87u_SoxhWACKA/exec';
 const APP_URL=window.location.href.split('?')[0];
 
 let STATE={
@@ -1093,22 +1093,33 @@ async function loadRespondView(){
     document.getElementById('emailReq').style.display='none';
     document.getElementById('respondEmail').placeholder='이메일 주소 (선택)';
   }
-  if(session.confirmedSlot){
-    document.getElementById('slotConfirmed').style.display='block';
-    document.getElementById('confirmedSlotText').textContent=formatSlot(session.confirmedSlot);
-    document.getElementById('respondFormCard').style.display='none';
-    document.getElementById('slotPickerCard').style.display='none';
-    document.getElementById('unavailableCard').style.display='none';
-    document.getElementById('respondSubmitBtn').style.display='none';
-    document.getElementById('unavailableBtn').style.display='none';
-    showView('respond');return;
-  }
+  // 후보자인 경우 본인 응답의 confirmedSlot 확인
   if(role==='candidate'){
     showLoading('면접관 가능 시간 확인 중...');
     const rdata=await apiGet({action:'getResponses',sessionId:STATE.currentSessionId});
     hideLoading();
     const interviewers=(rdata?.responses||[]).filter(r=>r.role==='interviewer');
     STATE.confirmedSlots=rdata?.confirmedSlots||[];
+
+    // 본인 이름+이메일로 이미 제출한 응답 찾기 (이름은 나중에 입력하므로 email 기준)
+    // URL에 email 파라미터가 없으므로 일단 슬롯 선택 화면 보여주고, 제출 후 확정 여부 표시
+    // 단, 이미 이름 입력 후 제출한 경우 respondName/respondEmail 값으로 확인
+    const myName=document.getElementById('respondName').value.trim();
+    const myEmail=document.getElementById('respondEmail').value.trim();
+    if(myName&&myEmail){
+      const myResp=(rdata?.responses||[]).find(r=>r.role==='candidate'&&r.name===myName&&r.email===myEmail);
+      if(myResp&&myResp.confirmedSlot){
+        document.getElementById('slotConfirmed').style.display='block';
+        document.getElementById('confirmedSlotText').textContent=formatSlot(myResp.confirmedSlot);
+        document.getElementById('respondFormCard').style.display='none';
+        document.getElementById('slotPickerCard').style.display='none';
+        document.getElementById('unavailableCard').style.display='none';
+        document.getElementById('respondSubmitBtn').style.display='none';
+        document.getElementById('unavailableBtn').style.display='none';
+        showView('respond');return;
+      }
+    }
+
     if(interviewers.length===0){
       STATE.interviewerSlots=[];
     } else {
