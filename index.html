@@ -561,6 +561,7 @@ textarea.fc{resize:vertical;min-height:100px}
     <div class="fg"><label class="fl">비밀번호 <span class="req">*</span></label><input class="fc" id="newUserPw" placeholder="비밀번호" /></div>
     <div class="fg"><label class="fl">이름 <span class="req">*</span></label><input class="fc" id="newUserName" placeholder="홍길동" /></div>
     <div class="fg"><label class="fl">센터/부서</label><input class="fc" id="newUserCenter" placeholder="예: 원료센터" /></div>
+    <div class="fg"><label class="fl">이메일 <span class="req">*</span></label><input class="fc" id="newUserEmail" type="email" placeholder="예: hong@daewoong.co.kr" /></div>
     <div class="fg" style="margin-bottom:0"><label class="fl">권한</label>
       <select class="fc" id="newUserRole"><option value="user">일반 담당자</option><option value="admin">관리자</option></select>
     </div>
@@ -585,7 +586,7 @@ textarea.fc{resize:vertical;min-height:100px}
 </div>
 
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbxyf8Zbe4rCDYGdF_0di4BlFs5ZDUBtMJ6xLk1Mxu98ymwIDtLMemXtFxYIxldvYjeO2Q/exec';
+const API_URL='https://script.google.com/macros/s/AKfycbzToI6-Zdhbxy56XtAxWMKl5VCze4dkEYlRnVLvJh_D4PAApKjWZ0bfHhf49hv7zs4yag/exec';
 const APP_URL=window.location.href.split('?')[0];
 
 let STATE={
@@ -828,7 +829,7 @@ function renderAccountList(accounts){
     <div class="acard">
       <div class="acard-info">
         <div class="acard-name">${esc(a.name)} <span class="badge ${a.role==='admin'?'badge-purple':'badge-blue'}">${a.role==='admin'?'관리자':'담당자'}</span></div>
-        <div class="acard-meta">ID: ${esc(a.userId)} ${a.center?'· '+esc(a.center):''}</div>
+        <div class="acard-meta">ID: ${esc(a.userId)} ${a.center?'· '+esc(a.center):''} ${a.email?'· <span style="color:var(--blue)">'+esc(a.email)+'</span>':''}</div>
       </div>
       <div class="acard-actions">
         <button class="btn btn-ghost btn-sm" onclick="openResetPw('${esc(a.userId)}','${esc(a.name)}')"><i class="ti ti-key"></i></button>
@@ -842,6 +843,7 @@ function openAccountModal(){
   document.getElementById('newUserPw').value='';
   document.getElementById('newUserName').value='';
   document.getElementById('newUserCenter').value='';
+  document.getElementById('newUserEmail').value='';
   document.getElementById('newUserRole').value='user';
   document.getElementById('accountModal').classList.add('on');
 }
@@ -851,10 +853,13 @@ async function doCreateAccount(){
   const newPassword=document.getElementById('newUserPw').value.trim();
   const newName=document.getElementById('newUserName').value.trim();
   const newCenter=document.getElementById('newUserCenter').value.trim();
+  const newEmail=document.getElementById('newUserEmail').value.trim();
   const newRole=document.getElementById('newUserRole').value;
   if(!newUserId||!newPassword||!newName){showToast('필수 항목을 입력해주세요');return;}
+  if(!newEmail){showToast('이메일을 입력해주세요');return;}
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(newEmail)){showToast('올바른 이메일 형식을 입력해주세요');return;}
   showLoading('계정 생성 중...');
-  const data=await apiGet({action:'createAccount',body:JSON.stringify({userId:STATE.user.userId,role:STATE.user.role,newUserId,newPassword,newName,newCenter,newRole})});
+  const data=await apiGet({action:'createAccount',body:JSON.stringify({userId:STATE.user.userId,role:STATE.user.role,newUserId,newPassword,newName,newCenter,newEmail,newRole})});
   hideLoading();
   if(data&&data.success){closeModal('accountModal');showToast('계정이 생성되었습니다');loadAccounts();}
   else showToast('생성 실패: '+(data?.error||'오류'));
