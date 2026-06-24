@@ -466,10 +466,13 @@ textarea.fc{resize:vertical;min-height:100px}
         <div class="lbox"><div class="lbox-role"><i class="ti ti-briefcase"></i>면접관</div><div class="lbox-url" id="interviewerLink">-</div><button class="btn btn-ghost btn-sm" onclick="copyLink('interviewerLink')"><i class="ti ti-copy"></i></button></div>
         <hr class="divider" style="margin:16px 0">
         <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">지원자에게 링크 발송</div>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <input class="fc" id="candidateSendName" placeholder="지원자 이름" style="flex:1" />
-          <input class="fc" id="candidateSendEmail" type="email" placeholder="이메일 주소" style="flex:2" />
+        <div id="candidateEmailRows">
+          <div class="candidate-email-row" style="display:flex;gap:8px;margin-bottom:8px">
+            <input class="fc candidate-name" placeholder="지원자 이름" style="flex:1" />
+            <input class="fc candidate-email" type="email" placeholder="이메일 주소" style="flex:2" />
+          </div>
         </div>
+        <button class="btn btn-ghost btn-sm" onclick="addCandidateRow()" style="margin-bottom:8px;width:100%"><i class="ti ti-plus"></i>지원자 추가</button>
         <div style="margin-bottom:8px">
           <select class="fc" id="candidateFixedDate">
             <option value="">날짜 지정 안함 (전체 교집합 제공)</option>
@@ -557,11 +560,13 @@ textarea.fc{resize:vertical;min-height:100px}
 <div class="modal-wrap" id="confirmModal">
   <div class="modal">
     <div class="modal-head"><span class="modal-title">면접 시간 확정</span><button class="modal-close" onclick="closeModal('confirmModal')"><i class="ti ti-x"></i></button></div>
-    <p style="font-size:14px;color:var(--ink3);margin-bottom:16px">아래 시간으로 확정하시겠어요?</p>
-    <div style="background:var(--blue-light);border-radius:var(--radius-sm);padding:16px;text-align:center;margin-bottom:12px">
-      <div style="font-size:18px;font-weight:800;color:var(--ink)" id="confirmModalTime">-</div>
+    <p style="font-size:14px;color:var(--ink3);margin-bottom:12px">확정할 시간과 메일을 받을 후보자를 선택해주세요.</p>
+    <div style="background:var(--blue-light);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px">
+      <div style="font-size:17px;font-weight:800;color:var(--ink)" id="confirmModalTime">-</div>
     </div>
-    <p style="font-size:12px;color:var(--ink4)">확정 후 후보자에게 자동으로 확정 메일이 발송됩니다.</p>
+    <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">확정 메일 받을 후보자</div>
+    <div id="confirmCandidateList" style="max-height:200px;overflow-y:auto;margin-bottom:4px"></div>
+    <p style="font-size:11px;color:var(--ink4);margin-bottom:4px">* 선택한 후보자에게만 확정 메일이 발송됩니다.</p>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal('confirmModal')">취소</button>
       <button class="btn btn-success" onclick="doConfirmSlot()"><i class="ti ti-check"></i>확정하기</button>
@@ -627,7 +632,7 @@ textarea.fc{resize:vertical;min-height:100px}
 </div>
 
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbwih6pd6nYWf0r4ZRSt9deVxXWp9KElM534B9RIhVXCUh_SCX6i5MhbSkiKghECswUK-A/exec';
+const API_URL='https://script.google.com/macros/s/AKfycbwXmtBv7L_pv1GvA3ryO9ktx0m_O4kweOC3oEr5juXhgJ20BKbtXpGUjp6loVZ8FVmX/exec';
 const APP_URL=window.location.href.split('?')[0];
 
 let STATE={
@@ -637,7 +642,9 @@ let STATE={
   availableDates:[],pendingConfirmSlot:null,
   isUnavailable:false,interviewerSlots:[],
   resetTargetId:null,resetTargetName:null,
-  currentTab:'session'
+  currentTab:'session',
+  confirmedSlots:[],
+  fixedDate:null
 };
 
 // ── 초기화 ──
@@ -787,7 +794,7 @@ async function refreshDetail(){
   ]);
   hideLoading();
   if(!sd||!sd.success){showToast('세션 로드 실패');return;}
-  const session=sd.session;STATE.currentSession=session;STATE.responses=rd?.responses||[];
+  const session=sd.session;STATE.currentSession=session;STATE.responses=rd?.responses||[];STATE.confirmedSlots=rd?.confirmedSlots||[];
   document.getElementById('detailTitle').textContent=session.title;
   document.getElementById('detailPosition').textContent=session.position||'';
   const cb=document.getElementById('confirmedBanner');
@@ -917,14 +924,76 @@ function updateFixedDateOptions(){
 function openConfirmModal(slot){
   STATE.pendingConfirmSlot=slot;
   document.getElementById('confirmModalTime').textContent=formatSlot(slot);
+  // 후보자 목록 렌더링 (이미 확정된 사람 제외)
+  const candidates=STATE.responses.filter(r=>r.role==='candidate'&&!r.confirmedSlot&&r.email);
+  const list=document.getElementById('confirmCandidateList');
+  if(candidates.length===0){
+    list.innerHTML=`<div style="font-size:13px;color:var(--ink3);padding:12px;text-align:center">메일을 받을 후보자가 없습니다.<br><span style="font-size:11px">(이메일 미입력 또는 이미 확정된 후보자)</span></div>`;
+  } else {
+    list.innerHTML=candidates.map(r=>`
+      <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:6px;cursor:pointer">
+        <input type="checkbox" class="confirm-candidate-cb" value="${esc(r.responseId)}" style="width:16px;height:16px;cursor:pointer" checked />
+        <span style="flex:1;font-size:13px;font-weight:600">${esc(r.name)}</span>
+        <span style="font-size:11px;color:var(--ink4)">${esc(r.email)}</span>
+      </label>`).join('');
+  }
   document.getElementById('confirmModal').classList.add('on');
 }
+
 async function doConfirmSlot(){
-  closeModal('confirmModal');showLoading('확정 처리 중...');
-  const data=await apiGet({action:'confirmSlot',body:JSON.stringify({sessionId:STATE.currentSessionId,confirmedSlot:STATE.pendingConfirmSlot})});
+  closeModal('confirmModal');
+  const checked=Array.from(document.querySelectorAll('.confirm-candidate-cb:checked')).map(cb=>cb.value);
+  if(checked.length===0){
+    showToast('확정 메일 받을 후보자가 없어도 확정할까요?');
+    // 후보자 없이도 확정은 진행 (첫 번째 responseId 없이)
+  }
+  showLoading('확정 처리 중...');
+  // 선택된 후보자 각각 확정 처리
+  const targets = checked.length > 0 ? checked : [null];
+  let allOk = true;
+  for (const responseId of targets) {
+    const body = {sessionId:STATE.currentSessionId, confirmedSlot:STATE.pendingConfirmSlot};
+    if(responseId) body.responseId = responseId;
+    const data=await apiGet({action:'confirmSlot',body:JSON.stringify(body)});
+    if(!data||!data.success) allOk=false;
+  }
   hideLoading();
-  if(data&&data.success){showToast('면접 시간이 확정되었습니다 ✓');refreshDetail();}
-  else showToast('확정 실패: '+(data?.error||'오류'));
+  if(allOk){showToast('면접 시간이 확정되었습니다 ✓');refreshDetail();}
+  else showToast('일부 확정 처리 중 오류가 발생했습니다');
+}
+
+function addCandidateRow(){
+  const row=document.createElement('div');
+  row.className='candidate-email-row';
+  row.style.cssText='display:flex;gap:8px;margin-bottom:8px';
+  row.innerHTML=`<input class="fc candidate-name" placeholder="지원자 이름" style="flex:1" /><input class="fc candidate-email" type="email" placeholder="이메일 주소" style="flex:2" /><button class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()" style="flex-shrink:0"><i class="ti ti-x"></i></button>`;
+  document.getElementById('candidateEmailRows').appendChild(row);
+}
+
+async function sendCandidateLink(){
+  const fixedDate=document.getElementById('candidateFixedDate').value;
+  const rows=document.querySelectorAll('.candidate-email-row');
+  const candidates=[];
+  for(const row of rows){
+    const name=row.querySelector('.candidate-name').value.trim();
+    const email=row.querySelector('.candidate-email').value.trim();
+    if(!email)continue;
+    if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){showToast('올바른 이메일 형식을 확인해주세요: '+email);return;}
+    candidates.push({name,email});
+  }
+  if(candidates.length===0){showToast('이메일을 입력해주세요');return;}
+  showLoading(`메일 발송 중... (0/${candidates.length})`);
+  let successCount=0;
+  for(let i=0;i<candidates.length;i++){
+    document.getElementById('loadingTxt').textContent=`메일 발송 중... (${i+1}/${candidates.length})`;
+    const data=await apiGet({action:'sendCandidateLink',body:JSON.stringify({sessionId:STATE.currentSessionId,name:candidates[i].name,email:candidates[i].email,fixedDate})});
+    if(data&&data.success)successCount++;
+  }
+  hideLoading();
+  if(successCount===candidates.length){
+    showToast(`${successCount}명에게 메일이 발송되었습니다 ✓`);
+    document.getElementById('candidateEmailRows').innerHTML=`<div class="candidate-email-row" style="display:flex;gap:8px;margin-bottom:8px"><input class="fc candidate-name" placeholder="지원자 이름" style="flex:1" /><input class="fc candidate-email" type="email" placeholder="이메일 주소" style="flex:2" /></div>`;
+  } else showToast(`${successCount}/${candidates.length}명 발송 완료 (일부 실패)`);
 }
 function closeModal(id){document.getElementById(id).classList.remove('on');}
 
@@ -1039,6 +1108,7 @@ async function loadRespondView(){
     const rdata=await apiGet({action:'getResponses',sessionId:STATE.currentSessionId});
     hideLoading();
     const interviewers=(rdata?.responses||[]).filter(r=>r.role==='interviewer');
+    STATE.confirmedSlots=rdata?.confirmedSlots||[];
     if(interviewers.length===0){
       STATE.interviewerSlots=[];
     } else {
@@ -1052,6 +1122,10 @@ async function loadRespondView(){
     // fixedDate가 있으면 해당 날짜만 필터링
     if(STATE.fixedDate){
       STATE.interviewerSlots=STATE.interviewerSlots.filter(s=>s.startsWith(STATE.fixedDate));
+    }
+    // 이미 확정된 슬롯 제외
+    if(STATE.confirmedSlots&&STATE.confirmedSlots.length>0){
+      STATE.interviewerSlots=STATE.interviewerSlots.filter(s=>!STATE.confirmedSlots.includes(s));
     }
     document.getElementById('respondDateTabs').style.display='none';
     if(STATE.interviewerSlots.length===0){
