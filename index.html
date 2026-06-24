@@ -453,13 +453,29 @@ textarea.fc{resize:vertical;min-height:100px}
     </div>
     <div class="pg-head" style="margin-bottom:16px">
       <div><div class="pg-title" id="detailTitle">-</div><div class="pg-sub" id="detailPosition"></div></div>
-      <button class="btn btn-ghost btn-sm" onclick="refreshDetail()"><i class="ti ti-refresh"></i></button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="refreshDetail()"><i class="ti ti-refresh"></i></button>
+        <button class="btn btn-ghost btn-sm" onclick="openEditModal()"><i class="ti ti-edit"></i>수정</button>
+        <button class="btn btn-danger btn-sm" onclick="doDeleteSession()"><i class="ti ti-trash"></i>삭제</button>
+      </div>
     </div>
     <div class="card">
       <div class="card-head"><span class="card-label"><i class="ti ti-link"></i>참여 링크</span></div>
       <div class="card-body">
         <div class="lbox"><div class="lbox-role"><i class="ti ti-user"></i>후보자</div><div class="lbox-url" id="candidateLink">-</div><button class="btn btn-ghost btn-sm" onclick="copyLink('candidateLink')"><i class="ti ti-copy"></i></button></div>
         <div class="lbox"><div class="lbox-role"><i class="ti ti-briefcase"></i>면접관</div><div class="lbox-url" id="interviewerLink">-</div><button class="btn btn-ghost btn-sm" onclick="copyLink('interviewerLink')"><i class="ti ti-copy"></i></button></div>
+        <hr class="divider" style="margin:16px 0">
+        <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">지원자에게 링크 발송</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input class="fc" id="candidateSendName" placeholder="지원자 이름" style="flex:1" />
+          <input class="fc" id="candidateSendEmail" type="email" placeholder="이메일 주소" style="flex:2" />
+        </div>
+        <div style="margin-bottom:8px">
+          <select class="fc" id="candidateFixedDate">
+            <option value="">날짜 지정 안함 (전체 교집합 제공)</option>
+          </select>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="sendCandidateLink()" style="width:100%"><i class="ti ti-send"></i>지원자에게 메일 발송</button>
       </div>
     </div>
     <div class="stats">
@@ -572,6 +588,31 @@ textarea.fc{resize:vertical;min-height:100px}
   </div>
 </div>
 
+<!-- 세션 수정 모달 -->
+<div class="modal-wrap" id="editSessionModal">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title">세션 수정</span><button class="modal-close" onclick="closeModal('editSessionModal')"><i class="ti ti-x"></i></button></div>
+    <div class="alert alert-warn" style="margin-bottom:16px"><i class="ti ti-alert-circle"></i>수정하면 기존 응답이 모두 삭제됩니다.</div>
+    <div class="fg"><label class="fl">세션 제목 <span class="req">*</span></label><input class="fc" id="editTitle" /></div>
+    <div class="fg"><label class="fl">채용 포지션</label><input class="fc" id="editPosition" /></div>
+    <div class="fr" style="margin-bottom:16px">
+      <div class="fg" style="margin-bottom:0"><label class="fl">시작 날짜 <span class="req">*</span></label><input class="fc" id="editDateStart" type="date" /></div>
+      <div class="fg" style="margin-bottom:0"><label class="fl">종료 날짜 <span class="req">*</span></label><input class="fc" id="editDateEnd" type="date" /></div>
+    </div>
+    <div class="fr" style="margin-bottom:16px">
+      <div class="fg" style="margin-bottom:0"><label class="fl">시작 시간 <span class="req">*</span></label><input class="fc" id="editTimeStart" type="time" /></div>
+      <div class="fg" style="margin-bottom:0"><label class="fl">종료 시간 <span class="req">*</span></label><input class="fc" id="editTimeEnd" type="time" /></div>
+    </div>
+    <div class="fg" style="margin-bottom:0"><label class="fl">시간 단위</label>
+      <select class="fc" id="editSlotMinutes"><option value="30">30분</option><option value="60">1시간</option></select>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('editSessionModal')">취소</button>
+      <button class="btn btn-primary" onclick="doEditSession()"><i class="ti ti-check"></i>수정하기</button>
+    </div>
+  </div>
+</div>
+
 <!-- 비밀번호 초기화 모달 -->
 <div class="modal-wrap" id="resetPwModal">
   <div class="modal">
@@ -586,7 +627,7 @@ textarea.fc{resize:vertical;min-height:100px}
 </div>
 
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbwmmscWlRE6LZF6u3ypxxgc-taGgik4qVnmOddqrtw0rNwjfzbs4CayEt8mleFsaBVl6A/exec';
+const API_URL='https://script.google.com/macros/s/AKfycbwih6pd6nYWf0r4ZRSt9deVxXWp9KElM534B9RIhVXCUh_SCX6i5MhbSkiKghECswUK-A/exec';
 const APP_URL=window.location.href.split('?')[0];
 
 let STATE={
@@ -610,6 +651,7 @@ window.onload=function(){
     document.querySelector('.hdr').style.display='none';
     document.querySelectorAll('[style*="border-bottom"]')[0] && (document.querySelectorAll('[style*="border-bottom"]')[0].style.display='none');
     STATE.currentSessionId=sid;STATE.currentRole=role;
+    STATE.fixedDate=p.get('fixedDate')||null;
     loadRespondView();
   } else {
     // 로그인 화면
@@ -758,6 +800,7 @@ async function refreshDetail(){
   document.getElementById('statCandidate').textContent=cands.length;
   document.getElementById('statInterviewer').textContent=ints.length;
   renderAnalysis(session,STATE.responses);renderRespondents(STATE.responses);
+  updateFixedDateOptions();
 }
 
 function renderAnalysis(session,responses){
@@ -795,6 +838,80 @@ function renderRespondents(responses){
       ${r.email?`<span style="font-size:11px;color:var(--ink4)">${esc(r.email)}</span>`:''}
     </div>`;
   }).join('');
+}
+
+async function sendCandidateLink(){
+  const name=document.getElementById('candidateSendName').value.trim();
+  const email=document.getElementById('candidateSendEmail').value.trim();
+  const fixedDate=document.getElementById('candidateFixedDate').value;
+  if(!email){showToast('이메일을 입력해주세요');return;}
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){showToast('올바른 이메일 형식을 입력해주세요');return;}
+  showLoading('메일 발송 중...');
+  const data=await apiGet({action:'sendCandidateLink',body:JSON.stringify({sessionId:STATE.currentSessionId,name,email,fixedDate})});
+  hideLoading();
+  if(data&&data.success){
+    showToast('지원자에게 메일이 발송되었습니다 ✓');
+    document.getElementById('candidateSendName').value='';
+    document.getElementById('candidateSendEmail').value='';
+  } else showToast('발송 실패: '+(data?.error||'오류'));
+}
+
+function openEditModal(){
+  const s=STATE.currentSession;
+  if(!s)return;
+  document.getElementById('editTitle').value=s.title||'';
+  document.getElementById('editPosition').value=s.position||'';
+  document.getElementById('editDateStart').value=s.dateStart||'';
+  document.getElementById('editDateEnd').value=s.dateEnd||'';
+  document.getElementById('editTimeStart').value=s.timeStart||'';
+  document.getElementById('editTimeEnd').value=s.timeEnd||'';
+  document.getElementById('editSlotMinutes').value=String(s.slotMinutes||30);
+  document.getElementById('editSessionModal').classList.add('on');
+}
+
+async function doEditSession(){
+  const title=document.getElementById('editTitle').value.trim();
+  const position=document.getElementById('editPosition').value.trim();
+  const dateStart=document.getElementById('editDateStart').value;
+  const dateEnd=document.getElementById('editDateEnd').value;
+  const timeStart=document.getElementById('editTimeStart').value;
+  const timeEnd=document.getElementById('editTimeEnd').value;
+  const slotMinutes=parseInt(document.getElementById('editSlotMinutes').value);
+  if(!title||!dateStart||!dateEnd||!timeStart||!timeEnd){showToast('필수 항목을 모두 입력해주세요');return;}
+  if(dateStart>dateEnd){showToast('시작 날짜가 종료 날짜보다 늦을 수 없습니다');return;}
+  closeModal('editSessionModal');
+  showLoading('수정 중...');
+  const data=await apiGet({action:'updateSession',body:JSON.stringify({sessionId:STATE.currentSessionId,title,position,dateRange:{start:dateStart,end:dateEnd},timeRange:{start:timeStart,end:timeEnd},slotMinutes})});
+  hideLoading();
+  if(data&&data.success){showToast('세션이 수정되었습니다');refreshDetail();}
+  else showToast('수정 실패: '+(data?.error||'오류'));
+}
+
+async function doDeleteSession(){
+  if(!confirm('이 세션을 삭제하시겠습니까?\n관련 응답 데이터도 모두 삭제됩니다.'))return;
+  showLoading('삭제 중...');
+  const data=await apiGet({action:'deleteSession',sessionId:STATE.currentSessionId});
+  hideLoading();
+  if(data&&data.success){showToast('세션이 삭제되었습니다');goBackToAdmin();}
+  else showToast('삭제 실패: '+(data?.error||'오류'));
+}
+
+function updateFixedDateOptions(){
+  const sel=document.getElementById('candidateFixedDate');
+  const responses=STATE.responses||[];
+  const interviewers=responses.filter(r=>r.role==='interviewer');
+  const dateSet=new Set();
+  interviewers.forEach(r=>(r.selectedSlots||[]).filter(s=>s!=='UNAVAILABLE').forEach(s=>dateSet.add(s.split('T')[0])));
+  const dates=Array.from(dateSet).sort();
+  const days=['일','월','화','수','목','금','토'];
+  sel.innerHTML='<option value="">날짜 지정 안함 (전체 교집합 제공)</option>';
+  dates.forEach(d=>{
+    const day=new Date(d+'T00:00:00').getDay();
+    if(day===0||day===6)return;
+    const dt=new Date(d+'T00:00:00');
+    const label=(dt.getMonth()+1)+'/'+dt.getDate()+'('+days[dt.getDay()]+')';
+    sel.innerHTML+=`<option value="${d}">${label}</option>`;
+  });
 }
 
 function openConfirmModal(slot){
@@ -931,6 +1048,10 @@ async function loadRespondView(){
         common=new Set([...common].filter(x=>s.has(x)));
       }
       STATE.interviewerSlots=Array.from(common).filter(s=>s!=='UNAVAILABLE').sort();
+    }
+    // fixedDate가 있으면 해당 날짜만 필터링
+    if(STATE.fixedDate){
+      STATE.interviewerSlots=STATE.interviewerSlots.filter(s=>s.startsWith(STATE.fixedDate));
     }
     document.getElementById('respondDateTabs').style.display='none';
     if(STATE.interviewerSlots.length===0){
